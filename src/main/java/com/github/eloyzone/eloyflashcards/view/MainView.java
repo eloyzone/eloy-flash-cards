@@ -13,6 +13,8 @@ public class MainView extends Application
     {
         BorderPane mainBorderPane = new BorderPane();
 
+        mainBorderPane.setTop(new MenuBar());
+
         Scene scene = new Scene(mainBorderPane, 700, 700);
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
