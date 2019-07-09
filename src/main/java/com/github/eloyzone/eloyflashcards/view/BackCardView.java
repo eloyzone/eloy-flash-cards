@@ -25,7 +25,6 @@ public class BackCardView extends VBox
 
     public BackCardView(Card card, BooleanProperty nextCardMustNotBeShown)
     {
-        System.out.println(card.getDeck().getName());
         this.card = card;
         this.nextCardMustNotBeShown = nextCardMustNotBeShown;
         this.words = card.getBackData();

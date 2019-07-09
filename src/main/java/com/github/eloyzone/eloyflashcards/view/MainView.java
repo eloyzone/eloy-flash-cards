@@ -58,6 +58,12 @@ public class MainView extends Application
 
         mainStackPane.prefWidthProperty().bind(scene.widthProperty());
         mainStackPane.prefHeightProperty().bind(scene.heightProperty());
+
+        if (Initializer.getFlashCard().getDirectoryOfEnglishSound() == null)
+        {
+            new SelectResourceView();
+        }
+
     }
 
     private HBox createTopController()
@@ -72,10 +78,23 @@ public class MainView extends Application
         Button addDeckButton = new Button("Add Deck");
         Button addCardButton = new Button("Add Card");
 
+        showDecksButton.setOnAction(event ->
+        {
+            int sizeOfMainStackPane = mainStackPane.getChildren().size();
+            for (; sizeOfMainStackPane > 1; sizeOfMainStackPane--)
+                mainStackPane.getChildren().remove(sizeOfMainStackPane - 1);
+            mainStackPane.getChildren().get(0).setVisible(true);
+        });
 
         addDeckButton.setOnAction(e ->
         {
             new NewDeckView(deckObservableList);
+            decksTableView.refresh();
+        });
+
+        addCardButton.setOnAction(e ->
+        {
+            new NewCardView(Initializer.getFlashCard().getDecks());
             decksTableView.refresh();
         });
 
