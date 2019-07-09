@@ -4,10 +4,12 @@ import com.github.eloyzone.eloyflashcards.model.Deck;
 import com.github.eloyzone.eloyflashcards.util.Initializer;
 import com.github.eloyzone.eloyflashcards.util.SavedObjectWriterReader;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
@@ -112,6 +114,24 @@ public class DecksTableView extends TableView<Deck>
             }
         };
 
+        // row's double click event handler
+        setRowFactory(tv ->
+        {
+            TableRow<Deck> row = new TableRow<>();
+            row.setOnMouseClicked(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    if (event.getClickCount() == 2 && (!row.isEmpty()))
+                    {
+                        Deck deck = row.getItem();
+                        new DeckView(mainStackPane, deck);
+                    }
+                }
+            });
+            return row;
+        });
 
         deckOptionsTableColumn.setCellFactory(deckOptionsTableColumnCellFactory);
 
