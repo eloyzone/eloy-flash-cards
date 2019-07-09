@@ -1,0 +1,21 @@
+
+#mainVBox {
+    -fx-padding: 9px 5px 5px 5px;
+    -fx-alignment: top-center;
+}
+
+.description-text-hbox {
+    -fx-padding: 9px 2px 5px 5px;
+}
+
+.description-text-hbox Text {
+    -fx-font-family: "Times New Roman", "FreeSerif";
+    -fx-font-size: 1.3em;
+    -fx-text-alignment: JUSTIFY;
+}
+
+.hyperlink {
+    -fx-font-family: "Times New Roman", "FreeSerif";
+    -fx-font-size: 1.2em;
+    -fx-border-color: transparent;
+}

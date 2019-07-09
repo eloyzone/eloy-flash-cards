@@ -7,7 +7,7 @@ import javafx.scene.control.SeparatorMenuItem;
 
 public class MenuBar extends javafx.scene.control.MenuBar
 {
-    public MenuBar()
+    public MenuBar(MainView mainView)
     {
         Menu fileMenu = new Menu("File");
         MenuItem switchProfileMenuItem = new MenuItem("Switch Profile");
@@ -19,6 +19,7 @@ public class MenuBar extends javafx.scene.control.MenuBar
 
         Menu helpMenu = new Menu("Help");
         MenuItem aboutMenuItem = new MenuItem("About");
+        aboutMenuItem.setOnAction(e -> new AboutView(mainView));
         helpMenu.getItems().addAll(aboutMenuItem);
 
         getMenus().addAll(fileMenu, helpMenu);
