@@ -112,6 +112,7 @@ public class BackCardView extends VBox
 
             Button checkButton = new Button("Check");
             Button doNotKnowButton = new Button("Don't know");
+
             Label labelCheckingStatus = new Label();
             labelCheckingStatus.setVisible(false);
             textEditorsVBox.getChildren().addAll(checkButton, doNotKnowButton, labelCheckingStatus);

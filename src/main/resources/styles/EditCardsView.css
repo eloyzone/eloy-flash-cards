@@ -1,0 +1,21 @@
+
+
+.node-border {
+    -fx-border-insets:  5,23,5,23;
+    -fx-background-insets:  5,23,5,23;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: gray;
+    -fx-border-style: solid;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 1, 0, 0, 0);
+}
+
+/* class styles for AutoCompleteTextField */
+.validation-error {
+    -fx-text-box-border: #DBB1B1 ;
+    -fx-control-inner-background: #FFF0F0 ;
+    -fx-focus-color: #FF2020 ;
+    -fx-faint-focus-color: #FF202020 ;
+}
+

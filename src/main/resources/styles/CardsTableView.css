@@ -1,0 +1,22 @@
+
+.place-holder-label {
+    -fx-font-family: "Times New Roman", "FreeSerif";
+    -fx-font-size: 1.5em;
+}
+
+{
+    -fx-focus-color: transparent;
+}
+
+
+.table-view .column-header .label {
+    -fx-alignment: CENTER;
+}
+
+.table-view .cell {
+    -fx-alignment: CENTER;
+}
+
+.table-view .cell#deckNameTableColumn  {
+    -fx-alignment: CENTER-LEFT;
+}

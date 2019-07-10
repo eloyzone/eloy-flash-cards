@@ -1,7 +1,7 @@
 
 .node-border {
-    -fx-border-insets:  5,23,5,23;
-    -fx-background-insets:  5,23,5,23;
+    -fx-border-insets: 5, 23, 5, 23;
+    -fx-background-insets: 5, 23, 5, 23;
     -fx-background-radius: 6;
     -fx-border-radius: 6;
     -fx-border-color: gray;

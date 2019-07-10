@@ -96,7 +96,8 @@ public class DecksTableView extends TableView<Deck>
 
                             editCardsMenuItem.setOnAction(event ->
                             {
-
+                                new EditCardsView(mainStackPane, deckObservableList, getIndex());
+                                refresh();
                             });
 
                             deleteMenuItem.setOnAction(event ->
