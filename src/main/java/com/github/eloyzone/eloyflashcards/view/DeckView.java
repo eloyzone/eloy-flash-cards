@@ -21,22 +21,6 @@ import java.util.Optional;
 
 public class DeckView extends VBox
 {
-    static String style = "-fx-border-insets: 5,23,5,23;\n" +
-            "\n" +
-            "  -fx-background-insets:  5,23,5,23;\n" +
-            "\n" +
-            "  -fx-background-radius: 6;\n" +
-            "\n" +
-            "  -fx-border-radius: 6;\n" +
-            "\n" +
-            "  -fx-border-color: gray;\n" +
-            "\n" +
-            "  -fx-border-width: 1;\n" +
-            "\n" +
-            "  -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 1, 0, 0, 0);\n";
-
-
-    private String name;
     private Iterator cardsIterator;
 
     private FaceCardView faceCardView;
@@ -48,7 +32,9 @@ public class DeckView extends VBox
 
     private Deck deck;
 
-    private DeckView() { }
+    private DeckView()
+    {
+    }
 
 
     public DeckView(StackPane parentStackPane, Deck deck)
@@ -95,7 +81,7 @@ public class DeckView extends VBox
 
         startLearningButton.setOnAction(e ->
         {
-            if(cardsIterator.hasNext())
+            if (cardsIterator.hasNext())
             {
                 BorderPane borderPane = (BorderPane) initializeCardsView();
                 parentStackPane.getChildren().add(borderPane);
@@ -120,7 +106,7 @@ public class DeckView extends VBox
         gridpane.setVgap(15);
         ColumnConstraints column1 = new ColumnConstraints(100);
         ColumnConstraints column2 = new ColumnConstraints(50, 150, 300);
-        gridpane.getColumnConstraints().addAll(column1,column2);
+        gridpane.getColumnConstraints().addAll(column1, column2);
 
         Label newLabel = new Label("New");
         Label newValueLabel = new Label("");
@@ -131,17 +117,17 @@ public class DeckView extends VBox
         Label totalLabel = new Label("Total");
         Label totalValueLabel = new Label("");
 
-        gridpane.add(newLabel,0,0);
-        gridpane.add(newValueLabel,1,0);
+        gridpane.add(newLabel, 0, 0);
+        gridpane.add(newValueLabel, 1, 0);
 
-        gridpane.add(learnedLabel,0,1);
-        gridpane.add(learnedValueLabel,1,1);
+        gridpane.add(learnedLabel, 0, 1);
+        gridpane.add(learnedValueLabel, 1, 1);
 
-        gridpane.add(notLearnedLabel,0,2);
-        gridpane.add(notLearnedValueLabel,1,2);
+        gridpane.add(notLearnedLabel, 0, 2);
+        gridpane.add(notLearnedValueLabel, 1, 2);
 
-        gridpane.add(totalLabel,0,3);
-        gridpane.add(totalValueLabel,1,3);
+        gridpane.add(totalLabel, 0, 3);
+        gridpane.add(totalValueLabel, 1, 3);
 
         newValueLabel.setText(String.valueOf(deck.getNewCardCount()));
         learnedValueLabel.setText(String.valueOf(deck.getLearnedCardCount()));
@@ -161,12 +147,14 @@ public class DeckView extends VBox
         topScrollPane.setFitToHeight(true);
         topScrollPane.prefWidthProperty().bind(borderPane.widthProperty().divide(2));
         topScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2));
+        topScrollPane.getStyleClass().add("node-border");
 
         ScrollPane bottomScrollPane = new ScrollPane();
         bottomScrollPane.setFitToWidth(true);
         bottomScrollPane.setFitToHeight(true);
         bottomScrollPane.prefWidthProperty().bind(borderPane.widthProperty().divide(2));
         bottomScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2));
+        bottomScrollPane.getStyleClass().add("node-border");
 
         inflateCards((Card) cardsIterator.next());
 

@@ -36,6 +36,8 @@ public class Card implements Serializable
     public void setKnown(boolean known)
     {
         this.known = known;
+        this.newCard = false;
+        this.deck.refreshReport();
     }
 
     public String getFaceData()
