@@ -20,7 +20,7 @@ public class FaceCardView extends VBox
 
     public FaceCardView(Card card)
     {
-        setAlignment(Pos.TOP_CENTER);
+        setAlignment(Pos.CENTER);
         setSpacing(10);
         setPadding(new Insets(10, 0, 10, 0));
 

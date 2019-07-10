@@ -7,10 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -37,6 +34,7 @@ public class NewDeckView
         this.data = data;
         createButtons();
         createOtherView();
+        cancelButton.requestFocus();
         stage.showAndWait();
     }
 
@@ -48,17 +46,18 @@ public class NewDeckView
         createOtherView();
         deckNameTextField.setText(data.get(index).getName());
         deckDescriptionTextArea.setText(data.get(index).getDescription());
+        cancelButton.requestFocus();;
         stage.showAndWait();
     }
 
     private void createOtherView()
     {
         VBox vBox = new VBox();
-        deckNameLabel = new Label("Name for deck:");
-        deckDescriptionLabel = new Label("Description for deck:");
-        deckDescriptionTextArea = new TextArea();
+        deckNameLabel = new Label("Deck Name:");
+        deckDescriptionLabel = new Label("Deck Description:");
         deckNameTextField = new TextField();
         deckDescriptionTextArea = new TextArea();
+        deckNameTextField.setPromptText("Fill in the gap");
 
         vBox.getChildren().addAll(deckNameLabel, deckNameTextField, deckDescriptionLabel, deckDescriptionTextArea, buttonHBox);
         vBox.setPadding(new Insets(10, 10, 10, 10));
@@ -84,8 +83,6 @@ public class NewDeckView
         addButton = new Button("Add");
         addButton.setId("green-button");
         cancelButton.setId("red-button");
-        cancelButton.setMinWidth(100);
-        addButton.setMinWidth(100);
         buttonHBox.getChildren().addAll(cancelButton, addButton);
         buttonHBox.setAlignment(Pos.BOTTOM_RIGHT);
 
@@ -94,23 +91,44 @@ public class NewDeckView
 
         addButton.setOnAction(event ->
         {
-            if(indexOfDeckForEdit > -1)
+
+
+            if(deckNameTextField.getText().equals(""))
             {
-                data.get(indexOfDeckForEdit).setName(deckNameTextField.getText());
-                data.get(indexOfDeckForEdit).setDescription(deckDescriptionTextArea.getText());
-                Initializer.getFlashCard().getDecks().get(indexOfDeckForEdit).setName(deckNameTextField.getText());
-                Initializer.getFlashCard().getDecks().get(indexOfDeckForEdit).setName(deckNameTextField.getText());
-                new SavedObjectWriterReader().write(Initializer.getFlashCard());
+                showNotification();
             }
             else
             {
-                Deck deck = new Deck(deckNameTextField.getText(), deckDescriptionTextArea.getText());
-                Initializer.getFlashCard().getDecks().add(deck);
-                new SavedObjectWriterReader().write(Initializer.getFlashCard());
-                data.add(deck);
+                if(indexOfDeckForEdit > -1)
+                {
+                    data.get(indexOfDeckForEdit).setName(deckNameTextField.getText());
+                    data.get(indexOfDeckForEdit).setDescription(deckDescriptionTextArea.getText());
+                    Initializer.getFlashCard().getDecks().get(indexOfDeckForEdit).setName(deckNameTextField.getText());
+                    Initializer.getFlashCard().getDecks().get(indexOfDeckForEdit).setName(deckNameTextField.getText());
+                    new SavedObjectWriterReader().write(Initializer.getFlashCard());
+                }
+                else
+                {
+                    Deck deck = new Deck(deckNameTextField.getText(), deckDescriptionTextArea.getText());
+                    Initializer.getFlashCard().getDecks().add(deck);
+                    new SavedObjectWriterReader().write(Initializer.getFlashCard());
+                    data.add(deck);
+                }
+                stage.close();
             }
-            stage.close();
         });
+    }
 
+    private void showNotification()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error Dialog");
+        alert.setHeaderText("Deck was not created");
+        alert.setContentText("Required data was not entered\nEnter the name of Deck.");
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initStyle(StageStyle.UTILITY);
+        Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+        stageAlert.getIcons().addAll(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_eloy_flash_card_mini.png")));
+        alert.showAndWait();
     }
 }

@@ -59,6 +59,21 @@
     -fx-background-color: linear-gradient(#ff5400, #ff2700);
 }
 
+/* remove focus borders from combo-box*/
+.combo-box-base:focused{
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+}
 
+.text-field {
+    -fx-background-color: -fx-text-box-border, -fx-background ;
+    -fx-background-insets: 0, 0 0 1 0 ;
+    -fx-background-radius: 0;
+    -fx-font-family: "Times New Roman", "FreeSerif";
+    -fx-font-size: 1.3em;
 
-
+}
+.text-field:focused {
+    -fx-background-color: -fx-focus-color, -fx-background ;
+}

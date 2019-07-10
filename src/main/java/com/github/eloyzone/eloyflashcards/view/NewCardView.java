@@ -106,6 +106,7 @@ public class NewCardView
         });
 
         faceTextField = new TextField();
+        faceTextField.setPromptText("Fill in the gap");
 
         SortedSet<String> entries = new TreeSet<>();
         entries.addAll(Initializer.getEnglishVoiceSoundNames());
@@ -134,6 +135,7 @@ public class NewCardView
 
         HBox hBoxTextFieldsBackVBox = new HBox();
         TextField backTextField = new TextField();
+        backTextField.setPromptText("Fill in the gap");
         HBox.setHgrow(backTextField, Priority.ALWAYS);
         hBoxTextFieldsBackVBox.setSpacing(15);
         ImageButton removeTextField = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_remove.png")), 15, 15);
@@ -147,6 +149,7 @@ public class NewCardView
         {
             HBox newHBoxTextFieldsBackVBox = new HBox();
             TextField newBackTextField = new TextField();
+            newBackTextField.setPromptText("Fill in the gap");
             HBox.setHgrow(newBackTextField, Priority.ALWAYS);
             newHBoxTextFieldsBackVBox.setSpacing(15);
             ImageButton newRemoveTextField = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_remove.png")), 15, 15);

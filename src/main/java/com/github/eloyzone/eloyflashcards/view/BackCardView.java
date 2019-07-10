@@ -105,7 +105,9 @@ public class BackCardView extends VBox
                 HBox hBox = new HBox();
                 hBox.setAlignment(Pos.CENTER);
                 hBox.setSpacing(10);
-                hBox.getChildren().add(new TextField());
+                TextField textField = new TextField();
+                textField.setPromptText("Fill in the gap");
+                hBox.getChildren().add(textField);
                 textEditorsVBox.getChildren().addAll(hBox);
                 numberOfTextEditor--;
             }

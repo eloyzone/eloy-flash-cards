@@ -20,3 +20,7 @@
 .table-view .cell#deckNameTableColumn  {
     -fx-alignment: CENTER-LEFT;
 }
+
+.table-view {
+    -fx-selection-bar: rgba(255, 0, 0, 0.82);
+}
