@@ -110,14 +110,15 @@ public class BackCardView extends VBox
                 numberOfTextEditor--;
             }
 
-            Button checkButton = new Button("Check");
+            Button evaluateButton = new Button("Evaluate >>");
             Button doNotKnowButton = new Button("Don't know");
-
+            evaluateButton.setId("blue-button");
+            doNotKnowButton.setId("red-button");
             Label labelCheckingStatus = new Label();
             labelCheckingStatus.setVisible(false);
-            textEditorsVBox.getChildren().addAll(checkButton, doNotKnowButton, labelCheckingStatus);
+            textEditorsVBox.getChildren().addAll(evaluateButton, doNotKnowButton, labelCheckingStatus);
 
-            checkButton.setOnAction(e ->
+            evaluateButton.setOnAction(e ->
             {
                 ArrayList<String> enteredEditTextArrayList = new ArrayList<>();
                 for (int i = 0; i < words.size(); i++)
@@ -132,7 +133,7 @@ public class BackCardView extends VBox
                     labelCheckingStatus.setText("Correct");
                     labelCheckingStatus.setTextFill(Color.GREEN);
                     doNotKnowButton.setDisable(true);
-                    checkButton.setDisable(true);
+                    evaluateButton.setDisable(true);
                     nextCardMustNotBeShown.set(false);
                     showBackCardDetails();
                     knowCard();
@@ -147,7 +148,7 @@ public class BackCardView extends VBox
             doNotKnowButton.setOnAction(e ->
             {
                 doNotKnowCard();
-                checkButton.setDisable(true);
+                evaluateButton.setDisable(true);
                 showBackCardDetails();
             });
         }

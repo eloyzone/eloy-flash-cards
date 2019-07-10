@@ -18,6 +18,9 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -186,6 +189,7 @@ public class EditCardsView
 
 
         updateButton = new Button("Update");
+        updateButton.setId("green-button");
         updateButton.setMinWidth(100);
         buttonHBox = new HBox();
         buttonHBox.getChildren().addAll(updateButton);
@@ -293,6 +297,10 @@ public class EditCardsView
         alert.setTitle("Error Dialog");
         alert.setHeaderText("Card was not created");
         alert.setContentText("Required deckObservableList was not entered");
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initStyle(StageStyle.UTILITY);
+        Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+        stageAlert.getIcons().addAll(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_eloy_flash_card_mini.png")));
         alert.showAndWait();
     }
 

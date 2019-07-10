@@ -39,6 +39,9 @@ public class FaceCardView extends VBox
             copyableTextField.setAlignment(Pos.CENTER);
             getChildren().addAll(copyableTextField);
         }
+
+        if(card.isHasVoiceOnFace())
+            playMp3File(card.getFaceData());
     }
 
     private void playMp3File(String soundName)

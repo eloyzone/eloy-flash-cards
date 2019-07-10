@@ -9,3 +9,63 @@
     -fx-border-width: 1;
     -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 1, 0, 0, 0);
 }
+
+#blue-button {
+    -fx-background-color: #000000,
+    linear-gradient(#7ebcea, #2f4b8f),
+    linear-gradient(#426ab7, #263e75),
+    linear-gradient(#395cab, #223768);
+    -fx-background-insets: 0, 1, 2, 3;
+    -fx-background-radius: 3, 2, 2, 2;
+    -fx-padding: 12 15 12 15;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+}
+
+#blue-button Text {
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 0, 0.0, 0, 1);
+}
+
+#blue-button:pressed {
+    -fx-scale-y: 0.9;
+    -fx-scale-x: 0.9;
+}
+
+#blue-button:hover {
+    -fx-background-color: #000000,
+    linear-gradient(#7ebcea, #2f4b8f),
+    linear-gradient(#426ab7, #263e75),
+    linear-gradient(#406dc6, #3360a3);
+}
+
+#red-button {
+    -fx-background-color: #000000,
+    linear-gradient(#ea6e9c, #8f2159),
+    linear-gradient(#b7264e, #751241),
+    linear-gradient(#ab1b51, #680c35);
+    -fx-background-insets: 0, 1, 2, 3;
+    -fx-background-radius: 3, 2, 2, 2;
+    -fx-padding: 12 15 12 15;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+}
+
+#red-button Text {
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 0, 0.0, 0, 1);
+}
+
+#red-button:pressed {
+    -fx-scale-y: 0.9;
+    -fx-scale-x: 0.9;
+}
+
+#red-button:hover {
+    -fx-background-color: #000000,
+    linear-gradient(#ea6e9c, #8f2159),
+    linear-gradient(#b7264e, #751241),
+    linear-gradient(#e31d64, #a30e5b);
+}

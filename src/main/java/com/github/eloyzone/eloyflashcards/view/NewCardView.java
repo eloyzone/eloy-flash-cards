@@ -31,7 +31,7 @@ public class NewCardView
     private VBox containerVBox;
     private HBox buttonHBox;
     private Button addButton;
-    private Button closeButton;
+    private Button cancelButton;
 
     CheckBox needTextFieldInBackCheckBox;
     CheckBox hasVoiceCheckBox;
@@ -175,11 +175,13 @@ public class NewCardView
         backVBox.getChildren().addAll(hBoxBackVBox, textFieldsBackScrollPane, hBoxTextAreaDescriptionBack);
 
         addButton = new Button("Add");
-        closeButton = new Button("Close");
+        cancelButton = new Button("Cancel");
+        addButton.setId("green-button");
+        cancelButton.setId("red-button");
         addButton.setMinWidth(100);
-        closeButton.setMinWidth(100);
+        cancelButton.setMinWidth(100);
         buttonHBox = new HBox();
-        buttonHBox.getChildren().addAll(addButton, closeButton);
+        buttonHBox.getChildren().addAll(addButton, cancelButton);
         buttonHBox.setAlignment(Pos.BOTTOM_RIGHT);
         buttonHBox.setPadding(new Insets(0, 10, 0, 0));
 
@@ -214,7 +216,7 @@ public class NewCardView
 
         });
 
-        closeButton.setOnAction(e ->
+        cancelButton.setOnAction(e ->
         {
             stage.close();
         });
@@ -272,6 +274,10 @@ public class NewCardView
         alert.setTitle("Error Dialog");
         alert.setHeaderText("Card was not created");
         alert.setContentText("Required deckObservableList was not entered");
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initStyle(StageStyle.UTILITY);
+        Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+        stageAlert.getIcons().addAll(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_eloy_flash_card_mini.png")));
         alert.showAndWait();
     }
 }

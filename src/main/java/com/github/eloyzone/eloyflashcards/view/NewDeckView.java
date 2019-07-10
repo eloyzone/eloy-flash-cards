@@ -27,7 +27,7 @@ public class NewDeckView
     private Label deckDescriptionLabel;
     private TextArea deckDescriptionTextArea;
     private HBox buttonHBox;
-    private Button okButton;
+    private Button addButton;
     private Button cancelButton;
     private ObservableList<Deck> data;
     private int indexOfDeckForEdit = -1;
@@ -66,6 +66,7 @@ public class NewDeckView
 
         stage = new Stage();
         scene = new Scene(vBox, 400, 250);
+        scene.getStylesheets().add(getClass().getClassLoader().getResource("styles/NewDeckView.css").toExternalForm());
         stage.setResizable(false);
         stage.setTitle("New Deck");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -80,16 +81,18 @@ public class NewDeckView
     {
         buttonHBox = new HBox();
         cancelButton = new Button("Cancel");
-        okButton = new Button("OK");
+        addButton = new Button("Add");
+        addButton.setId("green-button");
+        cancelButton.setId("red-button");
         cancelButton.setMinWidth(100);
-        okButton.setMinWidth(100);
-        buttonHBox.getChildren().addAll(cancelButton, okButton);
+        addButton.setMinWidth(100);
+        buttonHBox.getChildren().addAll(cancelButton, addButton);
         buttonHBox.setAlignment(Pos.BOTTOM_RIGHT);
 
 
         cancelButton.setOnAction(event -> stage.close());
 
-        okButton.setOnAction(event ->
+        addButton.setOnAction(event ->
         {
             if(indexOfDeckForEdit > -1)
             {

@@ -69,7 +69,7 @@ public class MainView extends Application
     private HBox createTopController()
     {
         HBox hBox = new HBox();
-
+        hBox.setSpacing(5);
         hBox.setAlignment(Pos.CENTER);
         hBox.getStyleClass().add("node-border");
         hBox.setPadding(new Insets(5, 0, 5, 0));
@@ -77,6 +77,9 @@ public class MainView extends Application
         Button showDecksButton = new Button("Decks");
         Button addDeckButton = new Button("Add Deck");
         Button addCardButton = new Button("Add Card");
+        showDecksButton.setId("dark-button");
+        addDeckButton.setId("dark-button");
+        addCardButton.setId("dark-button");
 
         showDecksButton.setOnAction(event ->
         {

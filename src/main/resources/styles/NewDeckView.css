@@ -1,10 +1,3 @@
-/* class styles for AutoCompleteTextField */
-.validation-error {
-    -fx-text-box-border: #DBB1B1;
-    -fx-control-inner-background: #FFF0F0;
-    -fx-focus-color: #FF2020;
-    -fx-faint-focus-color: #FF202020;
-}
 
 #green-button {
     -fx-background-color: linear-gradient(#889727, #689800),
