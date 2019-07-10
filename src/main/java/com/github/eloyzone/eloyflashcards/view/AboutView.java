@@ -45,14 +45,13 @@ public class AboutView
         Scene scene = new Scene(mainVBox);
         scene.getStylesheets().add(getClass().getResource("/styles/AboutView.css").toExternalForm());
         Stage stage = new Stage();
-        stage.setResizable(false);
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.setTitle("About");
-
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_eloy_flash_card_mini.png")));
         stage.initStyle(StageStyle.UTILITY);
         stage.show();
+        stage.setResizable(false);
     }
 }

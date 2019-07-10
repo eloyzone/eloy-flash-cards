@@ -74,20 +74,13 @@ public class SelectResourceView extends VBox
         Scene scene = new Scene(vBox);
         stage.setScene(scene);
         stage.centerOnScreen();
-        stage.setTitle("About");
+        stage.setTitle("Resource Selecting View");
         stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_eloy_flash_card_mini.png")));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.UTILITY);
         stage.setOnCloseRequest(event -> event.consume()); // disable the closing event
-        stage.setResizable(false);
-        stage.resizableProperty().setValue(Boolean.FALSE);
         stage.show();
-
-        // Sometimes stage.setResizeable(false) does not work on the GNU-Linuxes
-        double maxWidth = stage.getWidth();
-        double maxHeight = stage.getHeight();
-        stage.setMaxWidth(maxWidth);
-        stage.setMaxHeight(maxHeight);
+        stage.setResizable(false);
     }
 
 
