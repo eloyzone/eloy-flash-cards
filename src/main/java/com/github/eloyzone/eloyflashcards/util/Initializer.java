@@ -13,12 +13,11 @@ public class Initializer
 
     public static Initializer initialize()
     {
-        if(initializer == null)
+        if (initializer == null)
         {
             initializer = new Initializer();
             return initializer;
-        }
-        else
+        } else
         {
             return initializer;
         }
@@ -31,18 +30,53 @@ public class Initializer
         flashCard = savedObjectWriterReader.read();
         if (flashCard == null)
         {
-            File jarFileLocationFile = new File(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-            File resourceDirectoryFile = new File(jarFileLocationFile.getParentFile().getPath() + "/resources");
+            File executedJarLocationFile = new File(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            File resourceDirectoryFile = new File(executedJarLocationFile.getParentFile().getPath() + "/resources");
             if (resourceDirectoryFile.exists()) flashCard = new FlashCard(resourceDirectoryFile);
             else flashCard = new FlashCard(null);
 
             savedObjectWriterReader.write(flashCard);
         }
 
-        if (flashCard.getDirectoryOfEnglishSound() != null)
-            englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
-    }
+        if (flashCard != null && flashCard.getDirectoryOfEnglishSound() == null)
+        {
+            File executedJarLocationFile = new File(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            File resourceDirectoryFile = new File(executedJarLocationFile.getParentFile().getPath() + "/resources");
+            if (resourceDirectoryFile.exists())
+            {
+                flashCard.setDirectoryOfEnglishSound(resourceDirectoryFile);
+                savedObjectWriterReader.write(flashCard);
+                englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
+            } else
+            {
+                flashCard.setDirectoryOfEnglishSound(null);
+                savedObjectWriterReader.write(flashCard);
+            }
+        }
 
+        if (flashCard != null && flashCard.getDirectoryOfEnglishSound() != null)
+        {
+            File file = getFlashCard().getDirectoryOfEnglishSound();
+            if (file.exists())
+            {
+                englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
+            } else
+            {
+                File executedJarLocationFile = new File(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+                File resourceDirectoryFile = new File(executedJarLocationFile.getParentFile().getPath() + "/resources");
+                if (resourceDirectoryFile.exists())
+                {
+                    flashCard.setDirectoryOfEnglishSound(resourceDirectoryFile);
+                    savedObjectWriterReader.write(flashCard);
+                    englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
+                } else
+                {
+                    flashCard.setDirectoryOfEnglishSound(null);
+                    savedObjectWriterReader.write(flashCard);
+                }
+            }
+        }
+    }
 
 
     private static ArrayList<String> catchAllEnglishVoiceSoundNames(final File folder)

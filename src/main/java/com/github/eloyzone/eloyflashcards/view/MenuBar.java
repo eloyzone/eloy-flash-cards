@@ -11,11 +11,14 @@ public class MenuBar extends javafx.scene.control.MenuBar
     {
         Menu fileMenu = new Menu("File");
         MenuItem switchProfileMenuItem = new MenuItem("Switch Profile");
+        MenuItem settingsMenuItem = new MenuItem("Settings");
         MenuItem importMenuItem = new MenuItem("Import");
         MenuItem exportMenuItem = new MenuItem("Export");
         MenuItem exitMenuItem = new MenuItem("Exit");
+        fileMenu.getItems().addAll(switchProfileMenuItem, settingsMenuItem, new SeparatorMenuItem(), importMenuItem, exportMenuItem, new SeparatorMenuItem(), exitMenuItem);
+
         exitMenuItem.setOnAction(actionEvent -> Platform.exit());
-        fileMenu.getItems().addAll(switchProfileMenuItem, new SeparatorMenuItem(), importMenuItem, exportMenuItem, new SeparatorMenuItem(), exitMenuItem);
+        settingsMenuItem.setOnAction(actionEvent -> new SettingsView());
 
         Menu helpMenu = new Menu("Help");
         MenuItem aboutMenuItem = new MenuItem("About");

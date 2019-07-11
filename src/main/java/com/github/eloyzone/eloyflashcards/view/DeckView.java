@@ -2,6 +2,7 @@ package com.github.eloyzone.eloyflashcards.view;
 
 import com.github.eloyzone.eloyflashcards.model.Card;
 import com.github.eloyzone.eloyflashcards.model.Deck;
+import com.github.eloyzone.eloyflashcards.util.Initializer;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.beans.property.BooleanProperty;
@@ -22,12 +23,10 @@ import java.util.Optional;
 public class DeckView extends VBox
 {
     private Iterator cardsIterator;
-
     private FaceCardView faceCardView;
-
     private BackCardView backCardVBox;
-
-    StackPane parentStackPane;
+    private ImageButton startLearningButton;
+    private StackPane parentStackPane;
     public BooleanProperty nextCardMustNotBeShown = new SimpleBooleanProperty(true);
 
     private Deck deck;
@@ -46,11 +45,36 @@ public class DeckView extends VBox
         parentStackPane.getChildren().addAll(welcomingView());
         parentStackPane.getChildren().get(0).setVisible(false);
 
-        ArrayList<Card> cards = new ArrayList<>(deck.getCards());
-        Collections.shuffle(cards);
-        cardsIterator = cards.iterator();
+        if(evaluateSoundPlayingIssue())
+        {
+            startLearningButton.setDisable(true);
+        }
+        else
+        {
+            ArrayList<Card> cards = new ArrayList<>(deck.getCards());
+            Collections.shuffle(cards);
+            cardsIterator = cards.iterator();
+        }
     }
 
+    private boolean evaluateSoundPlayingIssue()
+    {
+        boolean soundPlayingIssue = false;
+        if (Initializer.getFlashCard().getDirectoryOfEnglishSound() == null)
+        {
+            ArrayList<Card> cardsArrayList = this.deck.getCards();
+            for (Card card : cardsArrayList)
+            {
+                if (card.isHasVoiceOnFace())
+                {
+                    soundPlayingIssue = true;
+                    break;
+                }
+            }
+        }
+
+        return soundPlayingIssue;
+    }
 
     private Node welcomingView()
     {
@@ -76,9 +100,7 @@ public class DeckView extends VBox
         Label deckNameLabel = new Label("Pronunciation");
         hBoxTop.getChildren().addAll(deckNameLabel);
 
-        ImageButton startLearningButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_student.png")), 100, 100, ContentDisplay.TOP, "Study Now!", null);
-
-
+        startLearningButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_student.png")), 100, 100, ContentDisplay.TOP, "Study Now!", null);
         startLearningButton.setOnAction(e ->
         {
             if (cardsIterator.hasNext())
