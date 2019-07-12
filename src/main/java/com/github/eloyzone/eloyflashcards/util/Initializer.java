@@ -81,6 +81,7 @@ public class Initializer
 
     private static ArrayList<String> catchAllEnglishVoiceSoundNames(final File folder)
     {
+        String desiredEnglishAccent = getFlashCard().getDesiredEnglishAccent();
         ArrayList<String> fileNames = new ArrayList<>();
         for (final File fileEntry : folder.listFiles())
         {
@@ -89,8 +90,8 @@ public class Initializer
                 catchAllEnglishVoiceSoundNames(fileEntry);
             } else
             {
-                if (!fileEntry.getName().contains("_us_pron.mp3"))
-                    fileNames.add(fileEntry.getName().replace("_uk_pron.mp3", ""));
+                if (fileEntry.getName().contains(desiredEnglishAccent))
+                    fileNames.add(fileEntry.getName().replace(desiredEnglishAccent, ""));
             }
         }
         return fileNames;

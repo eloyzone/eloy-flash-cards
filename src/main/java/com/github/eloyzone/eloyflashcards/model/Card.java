@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Card implements Serializable
 {
+    private static final long serialVersionUID = 935977773390644018L;
     private boolean known;
     private boolean newCard;
     private boolean hasTextFieldsOnBack;

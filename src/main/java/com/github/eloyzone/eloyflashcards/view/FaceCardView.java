@@ -1,6 +1,7 @@
 package com.github.eloyzone.eloyflashcards.view;
 
 import com.github.eloyzone.eloyflashcards.model.Card;
+import com.github.eloyzone.eloyflashcards.model.FlashCard;
 import com.github.eloyzone.eloyflashcards.util.Initializer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -46,7 +47,8 @@ public class FaceCardView extends VBox
 
     private void playMp3File(String soundName)
     {
-        String soundFilePath = Initializer.getFlashCard().getDirectoryOfEnglishSound().getPath() +"/" + soundName + "_uk_pron.mp3";
+        FlashCard flashCard = Initializer.getFlashCard();
+        String soundFilePath = flashCard.getDirectoryOfEnglishSound().getPath() +"/" + soundName + flashCard.getDesiredEnglishAccent();
         Media media = new Media(new File(soundFilePath).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.stop();
