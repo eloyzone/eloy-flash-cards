@@ -205,10 +205,10 @@ public class NewCardView
                 {
                     HBox hBox = (HBox) iterator.next();
                     TextField textField = (TextField) hBox.getChildren().get(0);
-                    if (textField.getText().length() > 0) backData.add(textField.getText());
+                    if (textField.getText().length() > 0) backData.add(textField.getText().trim().toLowerCase());
                 }
                 Deck deck = Initializer.getFlashCard().getDecks().get(deckIndex);
-                Card card = new Card(deck, faceCardText, backData, textAreaDescriptionBack.getText(), needTextFieldInBackCheckBox.isSelected(), faceTextShownCheckBox.isSelected(), hasVoiceCheckBox.isSelected());
+                Card card = new Card(deck, faceCardText.trim().toLowerCase(), backData, textAreaDescriptionBack.getText(), needTextFieldInBackCheckBox.isSelected(), faceTextShownCheckBox.isSelected(), hasVoiceCheckBox.isSelected());
                 deck.addNewCard(card);
                 stage.close();
             } else

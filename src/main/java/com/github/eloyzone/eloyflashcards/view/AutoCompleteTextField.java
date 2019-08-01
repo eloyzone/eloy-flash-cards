@@ -38,7 +38,8 @@ public class AutoCompleteTextField extends TextField
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue)
             {
-                if(autoCompleteEntries.contains(newValue.trim()))
+                newValue = newValue.toLowerCase().trim();
+                if(autoCompleteEntries.contains(newValue))
                 {
                     getStyleClass().clear();
                     getStyleClass().addAll(defaultTextFieldStyle);
