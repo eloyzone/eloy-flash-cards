@@ -17,7 +17,7 @@ public class BackCardView extends VBox
     private ArrayList<String> words;
 
     private VBox textEditorsVBox;
-    private TextField wordsLabel;
+    private TextArea wordsLabel;
     private TextArea descriptionLabel;
     private BooleanProperty nextCardMustNotBeShown;
     private Card card;
@@ -25,6 +25,7 @@ public class BackCardView extends VBox
 
     public BackCardView(Card card, BooleanProperty nextCardMustNotBeShown)
     {
+        getStylesheets().add(getClass().getResource("/styles/BackCardView.css").toExternalForm());
         this.card = card;
         this.nextCardMustNotBeShown = nextCardMustNotBeShown;
         this.words = card.getBackData();
@@ -68,11 +69,14 @@ public class BackCardView extends VBox
 
     private void createWordsLabel(ArrayList<String> words)
     {
-        wordsLabel = new TextField();
+        wordsLabel = new TextArea();
+        wordsLabel.setId("wordsLabel");
         wordsLabel.setEditable(false);
-        wordsLabel.setText(words.toString());
-        wordsLabel.setAlignment(Pos.CENTER);
-        wordsLabel.setStyle("-fx-font-size: 2em; -fx-background-color: transparent ;");
+        for (String word : words)
+        {
+            System.out.println(word);
+            wordsLabel.setText(wordsLabel.getText() + word + "\n");
+        }
         wordsLabel.setVisible(false);
     }
 
@@ -83,8 +87,6 @@ public class BackCardView extends VBox
         descriptionLabel.setPrefRowCount(10);
         descriptionLabel.setPrefColumnCount(100);
         descriptionLabel.setWrapText(true);
-        descriptionLabel.setPrefWidth(150);
-        descriptionLabel.setStyle("-fx-background-color:transparent;");
         descriptionLabel.setEditable(false);
         descriptionLabel.setText(card.getDescriptionBack());
         this.getChildren().add(descriptionLabel);

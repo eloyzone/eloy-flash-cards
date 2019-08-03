@@ -1,0 +1,13 @@
+#wordsLabel .scroll-pane .content .text {
+    -fx-text-alignment: center;
+}
+
+#wordsLabel {
+    -fx-font-size: 1.5em;
+    -fx-min-height: 150;
+}
+
+.text-area .scroll-pane .content{
+    -fx-background-color: transparent;
+}
+

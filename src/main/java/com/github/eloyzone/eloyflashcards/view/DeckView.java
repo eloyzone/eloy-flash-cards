@@ -168,14 +168,14 @@ public class DeckView extends VBox
         topScrollPane.setFitToWidth(true);
         topScrollPane.setFitToHeight(true);
         topScrollPane.prefWidthProperty().bind(borderPane.widthProperty().divide(2));
-        topScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2));
+        topScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2).subtract(100));
         topScrollPane.getStyleClass().add("node-border");
 
         ScrollPane bottomScrollPane = new ScrollPane();
         bottomScrollPane.setFitToWidth(true);
         bottomScrollPane.setFitToHeight(true);
         bottomScrollPane.prefWidthProperty().bind(borderPane.widthProperty().divide(2));
-        bottomScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2));
+        bottomScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2).add(100));
         bottomScrollPane.getStyleClass().add("node-border");
 
         inflateCards((Card) cardsIterator.next());
