@@ -3,8 +3,6 @@ package com.github.eloyzone.eloyflashcards.view;
 import com.github.eloyzone.eloyflashcards.model.FlashCard;
 import com.github.eloyzone.eloyflashcards.util.Initializer;
 import com.github.eloyzone.eloyflashcards.util.SavedObjectWriterReader;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -38,9 +36,9 @@ public class SettingsView
         browseNewDirectoryButton.setId("red-button");
         resourceDirectoryHBox.getChildren().addAll(directoryLabel, resourceDirectoryLabel, browseNewDirectoryButton);
 
-        if (Initializer.getFlashCard().getDirectoryOfEnglishSound() != null)
+        if (Initializer.getFlashCard().getResourceDirectory() != null)
         {
-            resourceDirectoryLabel.setText(Initializer.getFlashCard().getDirectoryOfEnglishSound().getPath());
+            resourceDirectoryLabel.setText(Initializer.getFlashCard().getResourceDirectory().getPath());
             resourceDirectoryLabel.setTooltip(new Tooltip(resourceDirectoryLabel.getText()));
         }
 
@@ -51,7 +49,7 @@ public class SettingsView
             if (selectedDirectory != null)
             {
                 Initializer.setResourceDirectoryFile(selectedDirectory);
-                resourceDirectoryLabel.setText(Initializer.getFlashCard().getDirectoryOfEnglishSound().getPath());
+                resourceDirectoryLabel.setText(Initializer.getFlashCard().getResourceDirectory().getPath());
                 resourceDirectoryLabel.setTooltip(new Tooltip(resourceDirectoryLabel.getText()));
             }
         });
@@ -82,7 +80,6 @@ public class SettingsView
             Initializer.getFlashCard().setDesiredEnglishAccent((String) selectedRadioButton.getUserData());
             new SavedObjectWriterReader().write(Initializer.getFlashCard());
         });
-
 
         vBox.getChildren().addAll(resourceDirectoryHBox, voiceAccentHBox);
         Scene scene = new Scene(vBox);

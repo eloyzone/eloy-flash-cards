@@ -2,14 +2,14 @@ package com.github.eloyzone.eloyflashcards.view;
 
 import com.github.eloyzone.eloyflashcards.model.Card;
 import com.github.eloyzone.eloyflashcards.model.Deck;
+import com.github.eloyzone.eloyflashcards.model.VoiceLanguage;
 import com.github.eloyzone.eloyflashcards.util.Initializer;
 import com.github.eloyzone.eloyflashcards.util.SavedObjectWriterReader;
+import com.github.eloyzone.eloyflashcards.util.Transitioner;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -21,29 +21,53 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class EditCardsView
 {
-    private VBox primaryVBox;
-    private StackPane parentStackPane;
-    private ObservableList<Deck> data;
+    private ObservableList<Deck> dataDecksObservableList;
     private int indexOfDeck;
-    private CardsTableView cardsTableView;
 
-    IntegerProperty simpleIntegerProperty = new SimpleIntegerProperty(-1);
+    private CardsSelectionTableView cardsSelectionTableView;
+    private IntegerProperty indexOfSelectedCardIntegerProperty;
+
+    private VBox editSelectedContainerVBox;
+
+    private VBox primaryVBox;
 
 
-    public EditCardsView(StackPane parentStackPane, ObservableList<Deck> data, int index)
+    private VBox faceCardVBox;
+    private HBox hBoxFaceCardVBox;
+    private Label faceCardLabel;
+    private Region regionHBoxFaceCardVBox;
+    private CheckBox needTextFieldInBackCheckBox;
+    private CheckBox hasVoiceCheckBox;
+    private ComboBox<String> faceCardVoiceLanguageComboBox;
+    private CheckBox faceTextShownCheckBox;
+    private TextField faceTextField;
+    private AutoCompleteTextField faceAutoCompleteTextField;
+    private VBox backTextFieldVBox;
+
+    private VBox backCardVBox;
+    private HBox backCardHBoxVBox;
+    private Label backCardLabel;
+    private Region regionHBoxBackCardVBox;
+    private ImageButton newTextFieldImageButton;
+    private ScrollPane backTextFieldsScrollPane;
+    private VBox backDescriptionTextAreaVBox;
+    private Label backDescriptionLabelVBox;
+    private TextArea textAreaDescriptionBack;
+
+    private HBox buttonHBox;
+    private Button updateButton;
+
+    public EditCardsView(StackPane parentStackPane, ObservableList<Deck> dataDecksObservableList, int indexOfDeck)
     {
-        this.parentStackPane = parentStackPane;
-        this.indexOfDeck = index;
-        this.data = data;
+        this.indexOfDeck = indexOfDeck;
+        this.dataDecksObservableList = dataDecksObservableList;
+        this.indexOfSelectedCardIntegerProperty = new SimpleIntegerProperty(-1);
 
         parentStackPane.getChildren().addAll(inflateView());
         parentStackPane.getChildren().get(0).setVisible(false);
@@ -52,141 +76,145 @@ public class EditCardsView
     private Node inflateView()
     {
         primaryVBox = new VBox();
-        primaryVBox.getStylesheets().add(getClass().getResource("/styles/EditCardsView.css").toExternalForm());
 
-        ArrayList<Card> cards = data.get(indexOfDeck).getCards();
-        ObservableList<Card> cardsObservableList = FXCollections.observableArrayList(data.get(indexOfDeck).getCards());
+        ArrayList<Card> cardArrayList = dataDecksObservableList.get(indexOfDeck).getCards();
+        ObservableList<Card> cardsObservableList = FXCollections.observableArrayList(dataDecksObservableList.get(indexOfDeck).getCards());
 
-        simpleIntegerProperty.addListener(new ChangeListener<Number>()
+        cardsSelectionTableView = new CardsSelectionTableView(cardsObservableList, indexOfSelectedCardIntegerProperty);
+        indexOfSelectedCardIntegerProperty.addListener((observable, oldValue, newValue) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-            {
-                if (primaryVBox.getChildren().size() == 2) primaryVBox.getChildren().remove(1);
+            if (primaryVBox.getChildren().size() == 2) primaryVBox.getChildren().remove(1);
 
-                Node newNodeToBeAdded = editSection(cards.get(newValue.intValue()));
-                final FadeTransition transition = new FadeTransition(Duration.millis(600), newNodeToBeAdded);
-                transition.setFromValue(0);
-                transition.setToValue(1);
-                transition.setInterpolator(Interpolator.EASE_IN);
-                primaryVBox.getChildren().add(newNodeToBeAdded);
-                transition.play();
-            }
+            Node newNodeToBeAdded = editSelectedCard(cardArrayList.get(newValue.intValue()));
+            FadeTransition fadeTransition = Transitioner.getFade(600, newNodeToBeAdded);
+            primaryVBox.getChildren().add(newNodeToBeAdded);
+            fadeTransition.play();
         });
-        cardsTableView = new CardsTableView(cardsObservableList, simpleIntegerProperty);
-        primaryVBox.getChildren().addAll(cardsTableView);
+
+        primaryVBox.getChildren().addAll(cardsSelectionTableView);
+        primaryVBox.getStylesheets().add(getClass().getResource("/styles/EditCardsView.css").toExternalForm());
         primaryVBox.getStyleClass().add("node-border");
         return primaryVBox;
     }
 
-
-    VBox containerVBox;
-    HBox buttonHBox;
-    Button updateButton;
-
-
-    CheckBox needTextFieldInBackCheckBox;
-    CheckBox hasVoiceCheckBox;
-    CheckBox faceTextShownCheckBox;
-
-    VBox textFieldsBackVBox;
-
-    TextField faceTextField;
-    AutoCompleteTextField faceAutoCompleteTextField;
-
-    private Node editSection(Card selectedCard)
+    private Node editSelectedCard(Card selectedCard)
     {
-        containerVBox = new VBox();
-        containerVBox.setSpacing(20);
-        containerVBox.setPadding(new Insets(20, 0, 20, 0));
+        editSelectedContainerVBox = new VBox();
+        editSelectedContainerVBox.setSpacing(20);
+        editSelectedContainerVBox.setPadding(new Insets(20, 0, 20, 0));
 
-        VBox faceVBox = new VBox();
-        faceVBox.setSpacing(10);
-        faceVBox.setPadding(new Insets(10, 10, 0, 10));
+        faceCardVBox = new VBox();
+        faceCardVBox.setSpacing(10);
+        faceCardVBox.setPadding(new Insets(10, 10, 0, 10));
 
-        HBox hBoxFaceVBox = new HBox();
+        hBoxFaceCardVBox = new HBox();
 
-        Label faceLabel = new Label("Front");
-        Region regionHBoxFaceVBox = new Region();
-        HBox.setHgrow(regionHBoxFaceVBox, Priority.ALWAYS);
+        faceCardLabel = new Label("Front");
+        faceCardLabel.getStyleClass().add("white-label");
+        regionHBoxFaceCardVBox = new Region();
+        HBox.setHgrow(regionHBoxFaceCardVBox, Priority.ALWAYS);
         hasVoiceCheckBox = new CheckBox("Has Voice");
+        faceCardVoiceLanguageComboBox = new ComboBox<String>();
+        faceCardVoiceLanguageComboBox.getItems().addAll(VoiceLanguage.getAllAvailableVoices());
+        faceCardVoiceLanguageComboBox.setDisable(true);
         faceTextShownCheckBox = new CheckBox("Face Text Shown");
         faceTextShownCheckBox.setDisable(true);
         faceTextShownCheckBox.setSelected(true);
         needTextFieldInBackCheckBox = new CheckBox("Needs TextField In Back");
-        hBoxFaceVBox.getChildren().addAll(faceLabel, regionHBoxFaceVBox, needTextFieldInBackCheckBox, hasVoiceCheckBox, faceTextShownCheckBox);
+        hBoxFaceCardVBox.getChildren().addAll(faceCardLabel, regionHBoxFaceCardVBox, needTextFieldInBackCheckBox, hasVoiceCheckBox, faceCardVoiceLanguageComboBox, faceTextShownCheckBox);
+        hBoxFaceCardVBox.setAlignment(Pos.CENTER);
+        hBoxFaceCardVBox.setSpacing(10);
         needTextFieldInBackCheckBox.setPadding(new Insets(0, 10, 0, 0));
         hasVoiceCheckBox.setPadding(new Insets(0, 10, 0, 0));
 
-        hasVoiceCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>()
+        hasVoiceCheckBox.selectedProperty().addListener((observable, oldValue, newValue) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+            if (newValue)
             {
-                if (newValue)
-                {
-                    faceTextShownCheckBox.setDisable(false);
-                    faceTextShownCheckBox.setSelected(false);
-                    faceVBox.getChildren().remove(faceTextField);
-                    faceVBox.getChildren().add(faceAutoCompleteTextField);
-                } else
-                {
-                    faceVBox.getChildren().remove(faceAutoCompleteTextField);
-                    faceVBox.getChildren().add(faceTextField);
-                    faceTextShownCheckBox.setDisable(true);
-                    faceTextShownCheckBox.setSelected(true);
-                }
+                faceTextShownCheckBox.setDisable(false);
+                faceTextShownCheckBox.setSelected(false);
+                faceCardVoiceLanguageComboBox.setDisable(false);
+                faceCardVBox.getChildren().remove(faceTextField);
+                faceCardVBox.getChildren().add(faceAutoCompleteTextField);
+            } else
+            {
+                faceCardVBox.getChildren().remove(faceAutoCompleteTextField);
+                faceCardVBox.getChildren().add(faceTextField);
+                faceTextShownCheckBox.setDisable(true);
+                faceTextShownCheckBox.setSelected(true);
+                faceCardVoiceLanguageComboBox.setDisable(true);
             }
         });
 
         faceTextField = new TextField();
-        SortedSet<String> entries = new TreeSet<>();
-        entries.addAll(Initializer.getEnglishVoiceSoundNames());
-        faceAutoCompleteTextField = new AutoCompleteTextField(entries);
+        faceTextField.setPromptText("Fill in the gap");
 
-        faceVBox.getChildren().addAll(hBoxFaceVBox, faceTextField);
+        faceCardVoiceLanguageComboBox.getSelectionModel().select(VoiceLanguage.ENGLISH);
+        faceAutoCompleteTextField = new AutoCompleteTextField(Initializer.getEnglishVoiceSoundNames());
 
-        VBox backVBox = new VBox();
-        backVBox.setSpacing(10);
+        if (selectedCard.isHasVoiceOnFace() && selectedCard.getVoiceLanguage().equals(VoiceLanguage.GERMAN))
+        {
+            faceCardVoiceLanguageComboBox.getSelectionModel().select(VoiceLanguage.GERMAN);
+            faceAutoCompleteTextField.switchLanguage(Initializer.getGermanVoiceSoundNames());
+        }
 
-        ScrollPane textFieldsBackScrollPane = new ScrollPane();
-        textFieldsBackScrollPane.setFitToWidth(true);
-        textFieldsBackScrollPane.setMinHeight(75);
-        textFieldsBackScrollPane.setMaxHeight(75);
-        textFieldsBackVBox = new VBox();
-        textFieldsBackVBox.setSpacing(10);
-        textFieldsBackScrollPane.setContent(textFieldsBackVBox);
+        faceCardVoiceLanguageComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if (newValue.equals(VoiceLanguage.ENGLISH))
+            {
+                faceAutoCompleteTextField.switchLanguage(Initializer.getEnglishVoiceSoundNames());
+            } else if (newValue.equals(VoiceLanguage.GERMAN))
+            {
+                faceAutoCompleteTextField.switchLanguage(Initializer.getGermanVoiceSoundNames());
+            }
+        });
 
-        textFieldsBackVBox.setPadding(new Insets(10, 10, 10, 10));
-        textFieldsBackVBox.prefWidthProperty().bind(textFieldsBackScrollPane.widthProperty());
+        faceCardVBox.getChildren().addAll(hBoxFaceCardVBox, faceTextField);
 
-        Label labelBack = new Label("Back:");
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-        ImageButton newTextFieldImageButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_add.png")), 25, 25);
+
+        backCardVBox = new VBox();
+        backCardVBox.setSpacing(10);
+
+        backCardLabel = new Label("Back");
+        backCardLabel.getStyleClass().add("white-label");
+        regionHBoxBackCardVBox = new Region();
+        HBox.setHgrow(regionHBoxBackCardVBox, Priority.ALWAYS);
+        newTextFieldImageButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_add.png")), 25, 25);
+
+        backCardHBoxVBox = new HBox(backCardLabel, regionHBoxBackCardVBox, newTextFieldImageButton);
+        backCardHBoxVBox.setAlignment(Pos.CENTER);
+        backCardHBoxVBox.setPadding(new Insets(0, 10, 0, 10));
+
+        backTextFieldsScrollPane = new ScrollPane();
+        backTextFieldsScrollPane.setFitToWidth(true);
+        backTextFieldsScrollPane.setMaxHeight(80);
+
+        backTextFieldVBox = new VBox();
+        backTextFieldVBox.setStyle("-fx-background-color: black;");
+        backTextFieldVBox.setSpacing(5);
+        backTextFieldsScrollPane.setContent(backTextFieldVBox);
+
+        backTextFieldVBox.setPadding(new Insets(10, 10, 10, 10));
+        backTextFieldVBox.prefWidthProperty().bind(backTextFieldsScrollPane.widthProperty());
 
         if (selectedCard == null) createTextField(null);
 
-        newTextFieldImageButton.setOnAction(event ->
-        {
-            createTextField(null);
-        });
+        newTextFieldImageButton.setOnAction(event -> createTextField(null));
 
-        HBox hBoxTextAreaDescriptionBack = new HBox();
-        TextArea textAreaDescriptionBack = new TextArea();
+        backDescriptionTextAreaVBox = new VBox();
+        backDescriptionTextAreaVBox.setSpacing(5);
+        backDescriptionLabelVBox = new Label("Description");
+        backDescriptionLabelVBox.getStyleClass().add("white-label");
+
+        textAreaDescriptionBack = new TextArea();
         textAreaDescriptionBack.setMaxHeight(75);
-        hBoxTextAreaDescriptionBack.setPadding(new Insets(0, 10, 0, 10));
-        hBoxTextAreaDescriptionBack.getChildren().add(textAreaDescriptionBack);
+        textAreaDescriptionBack.setWrapText(true);
+        backDescriptionTextAreaVBox.setPadding(new Insets(0, 10, 0, 10));
+        backDescriptionTextAreaVBox.getChildren().addAll(backDescriptionLabelVBox, textAreaDescriptionBack);
 
         HBox.setHgrow(textAreaDescriptionBack, Priority.ALWAYS);
 
-        HBox hBoxBackVBox = new HBox(labelBack, region, newTextFieldImageButton);
-        hBoxBackVBox.setAlignment(Pos.CENTER);
-        hBoxBackVBox.setPadding(new Insets(0, 10, 0, 10));
-
-
-        backVBox.getChildren().addAll(hBoxBackVBox, textFieldsBackScrollPane, hBoxTextAreaDescriptionBack);
-
+        backCardVBox.getChildren().addAll(backCardHBoxVBox, backTextFieldsScrollPane, backDescriptionTextAreaVBox);
 
         updateButton = new Button("Update");
         updateButton.setId("green-button");
@@ -195,7 +223,6 @@ public class EditCardsView
         buttonHBox.getChildren().addAll(updateButton);
         buttonHBox.setAlignment(Pos.BOTTOM_RIGHT);
         buttonHBox.setPadding(new Insets(0, 10, 0, 0));
-
 
         updateButton.setOnAction(e ->
         {
@@ -207,7 +234,7 @@ public class EditCardsView
                 else faceCardText = faceTextField.getText();
 
                 ArrayList<String> backData = new ArrayList<>();
-                Iterator iterator = textFieldsBackVBox.getChildren().iterator();
+                Iterator iterator = backTextFieldVBox.getChildren().iterator();
                 while (iterator.hasNext())
                 {
                     HBox hBox = (HBox) iterator.next();
@@ -220,31 +247,22 @@ public class EditCardsView
                 selectedCard.setHasTextFieldsOnBack(needTextFieldInBackCheckBox.isSelected());
                 selectedCard.setFaceDataShown(faceTextShownCheckBox.isSelected());
                 selectedCard.setHasVoiceOnFace(hasVoiceCheckBox.isSelected());
+                selectedCard.setVoiceLanguage(faceCardVoiceLanguageComboBox.getSelectionModel().getSelectedItem());
 
                 new SavedObjectWriterReader().write(Initializer.getFlashCard());
-                cardsTableView.refresh();
+                cardsSelectionTableView.refresh();
 
                 Node nodeToBeRemoved = primaryVBox.getChildren().get(1);
-                final FadeTransition transition = new FadeTransition(Duration.millis(250), nodeToBeRemoved);
-                transition.setFromValue(nodeToBeRemoved.getOpacity());
-                transition.setToValue(0);
-                transition.setInterpolator(Interpolator.EASE_BOTH);
-                transition.setOnFinished(finishHim ->
-                {
-                    primaryVBox.getChildren().remove(nodeToBeRemoved);
-                });
+                final FadeTransition transition = Transitioner.getFade(250, nodeToBeRemoved, Interpolator.EASE_BOTH);
+                transition.setOnFinished(finishHim -> primaryVBox.getChildren().remove(nodeToBeRemoved));
                 transition.play();
-
-
             } else
             {
                 showNotification();
             }
-
-
         });
 
-        containerVBox.getChildren().addAll(faceVBox, backVBox, buttonHBox);
+        editSelectedContainerVBox.getChildren().addAll(faceCardVBox, backCardVBox, buttonHBox);
 
         if (selectedCard.isHasTextFieldsOnBack()) needTextFieldInBackCheckBox.setSelected(true);
 
@@ -268,7 +286,7 @@ public class EditCardsView
         textAreaDescriptionBack.setText(selectedCard.getDescriptionBack());
 
 
-        return containerVBox;
+        return editSelectedContainerVBox;
     }
 
     private void createTextField(String textFieldString)
@@ -282,12 +300,14 @@ public class EditCardsView
         newHBoxTextFieldsBackVBox.setPadding(new Insets(0, 10, 0, 10));
         newHBoxTextFieldsBackVBox.setAlignment(Pos.CENTER);
         newHBoxTextFieldsBackVBox.getChildren().addAll(newBackTextField, newRemoveTextField);
-        textFieldsBackVBox.getChildren().addAll(newHBoxTextFieldsBackVBox);
+        backTextFieldVBox.getChildren().addAll(newHBoxTextFieldsBackVBox);
+        newBackTextField.requestFocus();
+
 
         newRemoveTextField.setOnAction(event1 ->
         {
-            if (textFieldsBackVBox.getChildren().size() > 1)
-                textFieldsBackVBox.getChildren().remove(newHBoxTextFieldsBackVBox);
+            if (backTextFieldVBox.getChildren().size() > 1)
+                backTextFieldVBox.getChildren().remove(newHBoxTextFieldsBackVBox);
         });
     }
 
@@ -315,8 +335,7 @@ public class EditCardsView
         }
 
         int backSideCardNum = 0;
-        ArrayList<String> backData = new ArrayList<>();
-        Iterator iterator = textFieldsBackVBox.getChildren().iterator();
+        Iterator iterator = backTextFieldVBox.getChildren().iterator();
         while (iterator.hasNext())
         {
             HBox hBox = (HBox) iterator.next();

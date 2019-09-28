@@ -1,13 +1,41 @@
 
-.node-border {
+.welcoming-vbox-border {
     -fx-border-insets: 5, 23, 5, 23;
     -fx-background-insets: 5, 23, 5, 23;
     -fx-background-radius: 6;
     -fx-border-radius: 6;
-    -fx-border-color: gray;
+    /*-fx-border-color: gray;*/
     -fx-border-style: solid;
-    -fx-border-width: 1;
+    /*-fx-border-width: 1;*/
     -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 1, 0, 0, 0);
+
+    -fx-border-color: red;
+    -fx-border-width: 3;
+}
+
+.node-border {
+    /*-fx-border-insets: 5, 23, 5, 23;*/
+    /*-fx-background-insets: 5, 23, 5, 23;*/
+    /*-fx-background-radius: 6;*/
+    /*-fx-border-radius: 6;*/
+    -fx-border-color: red;
+    /*-fx-border-style: solid;*/
+    -fx-border-width: 3;
+    /*-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 1, 0, 0, 0);*/
+}
+
+.node-border2 {
+    -fx-border-insets: 5, 23, 5, 23;
+    -fx-background-insets: 5, 23, 5, 23;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    /*-fx-border-color: red;*/
+    /*-fx-border-style: solid;*/
+    /*-fx-border-width: 0 1;*/
+
+    -fx-border-color: black transparent transparent transparent;
+    -fx-background-color: black;
+    -fx-border-width: 0 2 2 2;
 }
 
 #blue-button {
@@ -20,8 +48,8 @@
     -fx-padding: 12 15 12 15;
     -fx-text-fill: white;
     -fx-font-size: 12px;
-    -fx-pref-width: 120px;
-    -fx-max-width: 120px;
+    -fx-pref-width: 110px;
+    -fx-max-width: 110px;
 }
 
 #blue-button Text {
@@ -50,8 +78,8 @@
     -fx-padding: 12 15 12 15;
     -fx-text-fill: white;
     -fx-font-size: 12px;
-    -fx-pref-width: 120px;
-    -fx-max-width: 120px;
+    -fx-pref-width: 130px;
+    -fx-max-width: 130px;
 }
 
 #red-button Text {
@@ -71,13 +99,59 @@
 }
 
 .text-field {
-    -fx-background-color: -fx-text-box-border, -fx-background ;
-    -fx-background-insets: 0, 0 0 1 0 ;
+    -fx-background-color: -fx-text-box-border, -fx-background;
+    -fx-background-insets: 0, 0 0 1 0;
     -fx-background-radius: 0;
     -fx-font-family: "Times New Roman", "FreeSerif";
     -fx-font-size: 1.3em;
 
 }
+
 .text-field:focused {
-    -fx-background-color: -fx-focus-color, -fx-background ;
+    -fx-background-color: -fx-focus-color, -fx-background;
+}
+
+.progress-bar {
+    -fx-box-border: goldenrod;
+}
+
+.green-bar {
+    -fx-accent: green;
+}
+
+.orange-bar {
+    -fx-accent: orange;
+}
+
+.red-bar {
+    -fx-accent: red;
+}
+
+.general-welcome-info Label {
+    -fx-text-fill: white;
+}
+
+.red-text {
+    -fx-text-fill: red;
+}
+
+.green-text {
+    -fx-text-fill: green;
+}
+
+#level-hbox {
+    -fx-background-color: black;
+    -fx-background-radius: 0 0 0 0;
+}
+
+#level-text-field {
+    -fx-background-color: #a30000;
+    -fx-text-fill: white;
+    -fx-background-radius: 8 8 0 0;
+}
+
+#face-card-text-field {
+    -fx-font-size: 2em;
+    -fx-background-color: transparent;
+    -fx-alignment: center ;
 }

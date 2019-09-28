@@ -11,6 +11,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
@@ -19,37 +20,31 @@ import java.util.TreeSet;
 
 public class AutoCompleteTextField extends TextField
 {
-    private final SortedSet<String> autoCompleteEntries;
+    private SortedSet<String> autoCompleteEntries;
     private ContextMenu autoCompletePopupContextMenu;
-    private final ObservableList<String> defaultTextFieldStyle;
+    private ObservableList<String> defaultTextFieldStyle;
     private boolean acceptable = false;
 
 
-    public AutoCompleteTextField(SortedSet<String> autoCompleteEntries)
+    public AutoCompleteTextField(TreeSet<String> autoCompleteEntries)
     {
         super();
         this.autoCompleteEntries = new TreeSet<>(autoCompleteEntries);
-        autoCompletePopupContextMenu = new ContextMenu();
+        this.autoCompletePopupContextMenu = new ContextMenu();
+        this.defaultTextFieldStyle = FXCollections.observableArrayList(getStyleClass());
+        onChangeListenerAction();
 
-        defaultTextFieldStyle = FXCollections.observableArrayList(getStyleClass());
+    }
 
+    private void onChangeListenerAction()
+    {
         textProperty().addListener(new ChangeListener<String>()
         {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue)
             {
                 newValue = newValue.toLowerCase().trim();
-                if(autoCompleteEntries.contains(newValue))
-                {
-                    getStyleClass().clear();
-                    getStyleClass().addAll(defaultTextFieldStyle);
-                    acceptable = true;
-                }
-                else
-                {
-                    getStyleClass().add("validation-error");
-                    acceptable = false;
-                }
+                validate(newValue);
 
                 if (newValue.length() == 0)
                 {
@@ -82,7 +77,6 @@ public class AutoCompleteTextField extends TextField
                 autoCompletePopupContextMenu.hide();
             }
         });
-
     }
 
     public boolean isAcceptable()
@@ -90,6 +84,13 @@ public class AutoCompleteTextField extends TextField
         return acceptable;
     }
 
+
+    public void switchLanguage(SortedSet<String> autoCompleteEntries)
+    {
+        this.autoCompleteEntries = new TreeSet<>(autoCompleteEntries);
+        this.autoCompletePopupContextMenu = new ContextMenu();
+        validate(getText());
+    }
 
     private void populatePopup(List<String> searchResult)
     {
@@ -116,5 +117,19 @@ public class AutoCompleteTextField extends TextField
         }
         autoCompletePopupContextMenu.getItems().clear();
         autoCompletePopupContextMenu.getItems().addAll(menuItems);
+    }
+
+    private void validate(String input)
+    {
+        if (autoCompleteEntries.contains(input))
+        {
+            getStyleClass().clear();
+            getStyleClass().addAll(defaultTextFieldStyle);
+            acceptable = true;
+        } else
+        {
+            getStyleClass().add("validation-error");
+            acceptable = false;
+        }
     }
 }

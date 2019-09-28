@@ -4,12 +4,14 @@ import com.github.eloyzone.eloyflashcards.model.FlashCard;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 public class Initializer
 {
     private static Initializer initializer = null;
     private static FlashCard flashCard = null;
-    private static ArrayList<String> englishVoiceSoundNames;
+    private static TreeSet<String> englishVoiceSoundNames;
+    private static TreeSet<String> germanVoiceSoundNames;
 
     public static Initializer initialize()
     {
@@ -38,51 +40,72 @@ public class Initializer
             savedObjectWriterReader.write(flashCard);
         }
 
-        if (flashCard != null && flashCard.getDirectoryOfEnglishSound() == null)
+        if (flashCard != null && flashCard.getResourceDirectory() == null)
         {
             File executedJarLocationFile = new File(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
             File resourceDirectoryFile = new File(executedJarLocationFile.getParentFile().getPath() + "/resources");
             if (resourceDirectoryFile.exists())
             {
-                flashCard.setDirectoryOfEnglishSound(resourceDirectoryFile);
+                flashCard.setResourceDirectory(resourceDirectoryFile);
                 savedObjectWriterReader.write(flashCard);
-                englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
+                englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getResourceDirectoryEnglishVoices());
+                germanVoiceSoundNames = catchAllGermanVoiceSoundNames(getFlashCard().getResourceDirectoryGermanVoices());
             } else
             {
-                flashCard.setDirectoryOfEnglishSound(null);
+                flashCard.setResourceDirectory(null);
                 savedObjectWriterReader.write(flashCard);
             }
         }
 
-        if (flashCard != null && flashCard.getDirectoryOfEnglishSound() != null)
+        if (flashCard != null && flashCard.getResourceDirectory() != null)
         {
-            File file = getFlashCard().getDirectoryOfEnglishSound();
+            File file = getFlashCard().getResourceDirectory();
             if (file.exists())
             {
-                englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
+                englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getResourceDirectoryEnglishVoices());
+                germanVoiceSoundNames = catchAllGermanVoiceSoundNames(getFlashCard().getResourceDirectoryGermanVoices());
+
             } else
             {
                 File executedJarLocationFile = new File(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath());
                 File resourceDirectoryFile = new File(executedJarLocationFile.getParentFile().getPath() + "/resources");
                 if (resourceDirectoryFile.exists())
                 {
-                    flashCard.setDirectoryOfEnglishSound(resourceDirectoryFile);
+                    flashCard.setResourceDirectory(resourceDirectoryFile);
                     savedObjectWriterReader.write(flashCard);
-                    englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
+                    englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getResourceDirectoryEnglishVoices());
+                    germanVoiceSoundNames = catchAllGermanVoiceSoundNames(getFlashCard().getResourceDirectoryGermanVoices());
+
                 } else
                 {
-                    flashCard.setDirectoryOfEnglishSound(null);
+                    flashCard.setResourceDirectory(null);
                     savedObjectWriterReader.write(flashCard);
                 }
             }
         }
     }
 
+    private static TreeSet<String> catchAllGermanVoiceSoundNames(File resourceDirectoryGermanVoices)
+    {
+        TreeSet<String> fileNames = new TreeSet<>();
+        for (final File fileEntry : resourceDirectoryGermanVoices.listFiles())
+        {
+            if (fileEntry.isDirectory())
+            {
+                catchAllGermanVoiceSoundNames(fileEntry);
+            } else
+            {
+                fileNames.add(fileEntry.getName().replace(".mp3", ""));
+            }
+        }
+        return fileNames;
+    }
 
-    private static ArrayList<String> catchAllEnglishVoiceSoundNames(final File folder)
+
+    private static TreeSet<String> catchAllEnglishVoiceSoundNames(final File folder)
     {
         String desiredEnglishAccent = getFlashCard().getDesiredEnglishAccent();
-        ArrayList<String> fileNames = new ArrayList<>();
+        TreeSet<String> fileNames = new TreeSet<>();
         for (final File fileEntry : folder.listFiles())
         {
             if (fileEntry.isDirectory())
@@ -99,8 +122,9 @@ public class Initializer
 
     public static void setResourceDirectoryFile(File resourceDirectoryFile)
     {
-        flashCard.setDirectoryOfEnglishSound(resourceDirectoryFile);
-        englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getDirectoryOfEnglishSound());
+        flashCard.setResourceDirectory(resourceDirectoryFile);
+        englishVoiceSoundNames = catchAllEnglishVoiceSoundNames(getFlashCard().getResourceDirectoryEnglishVoices());
+        germanVoiceSoundNames = catchAllGermanVoiceSoundNames(getFlashCard().getResourceDirectoryGermanVoices());
         SavedObjectWriterReader savedObjectWriterReader = new SavedObjectWriterReader();
         savedObjectWriterReader.write(flashCard);
     }
@@ -110,8 +134,13 @@ public class Initializer
         return flashCard;
     }
 
-    public static ArrayList<String> getEnglishVoiceSoundNames()
+    public static TreeSet<String> getEnglishVoiceSoundNames()
     {
         return englishVoiceSoundNames;
+    }
+
+    public static TreeSet<String> getGermanVoiceSoundNames()
+    {
+        return germanVoiceSoundNames;
     }
 }

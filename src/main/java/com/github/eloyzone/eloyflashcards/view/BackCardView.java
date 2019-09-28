@@ -4,13 +4,16 @@ import com.github.eloyzone.eloyflashcards.model.Card;
 import javafx.beans.property.BooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class BackCardView extends VBox
 {
@@ -21,75 +24,131 @@ public class BackCardView extends VBox
     private TextArea descriptionLabel;
     private BooleanProperty nextCardMustNotBeShown;
     private Card card;
+    private boolean isTodayReview = false;
+
+    HBox backCardDetailsHBox;
 
 
-    public BackCardView(Card card, BooleanProperty nextCardMustNotBeShown)
+    public BackCardView(Card card, BooleanProperty nextCardMustNotBeShown, boolean isTodayReview)
     {
         getStylesheets().add(getClass().getResource("/styles/BackCardView.css").toExternalForm());
         this.card = card;
         this.nextCardMustNotBeShown = nextCardMustNotBeShown;
         this.words = card.getBackData();
+        this.isTodayReview = isTodayReview;
 
         setAlignment(Pos.TOP_CENTER);
-        setSpacing(10);
-        setPadding(new Insets(10, 0, 10, 0));
 
-        createWordsLabel(words);
+        HBox topHBox = new HBox();
+        TextField textField = new TextField();
+        textField.setText("Level " + card.getLevel());
+        textField.setEditable(false);
+        topHBox.getChildren().addAll(textField);
+        HBox.setHgrow(textField, Priority.ALWAYS);
+        VBox.setMargin(topHBox, new Insets(0, 0, 15, 0));
+        topHBox.setStyle("-fx-background-color: black;" + "-fx-background-radius: 0 0 0 0;");
+        textField.setStyle("-fx-background-color: orange; " + "-fx-background-radius: 8 8 0 0;" + "-fx-text-fill: white;");
+
+        backCardDetailsHBox = new HBox();
+        HBox.setHgrow(backCardDetailsHBox, Priority.ALWAYS);
+        backCardDetailsHBox.setVisible(false);
+
         if (card.isHasTextFieldsOnBack())
         {
             createTextEditors();
-            getChildren().addAll(textEditorsVBox, wordsLabel);
+            getChildren().addAll(topHBox, textEditorsVBox, backCardDetailsHBox);
         } else
         {
             VBox vBox = new VBox();
-            ImageButton showWordsButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_show-property.png")), 50, 50, ContentDisplay.TOP, "Show Back", "Show details of back card");
-            HBox hBox = new HBox();
-            hBox.setVisible(false);
-            ImageButton knowButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_tick.png")), 50, 50, null, null, "Know");
-            ImageButton unknownButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_forbidden.png")), 50, 50, null, null, "Don't Know");
-            hBox.getChildren().addAll(knowButton, unknownButton);
-            hBox.setAlignment(Pos.CENTER);
-            hBox.setSpacing(15);
-            vBox.getChildren().addAll(showWordsButton, hBox);
+            ImageButton showBackImageButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_show-property.png")), 50, 50, ContentDisplay.TOP, "Show Back", "Show details of back card");
+            HBox ImageButtonsHBox = new HBox();
+            ImageButtonsHBox.setVisible(false);
+            ImageButton knowImageButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_tick.png")), 50, 50, null, null, "Know");
+            ImageButton unknownImageButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_forbidden.png")), 50, 50, null, null, "Don't Know");
+            ImageButtonsHBox.getChildren().addAll(knowImageButton, unknownImageButton);
+            ImageButtonsHBox.setAlignment(Pos.CENTER);
+            ImageButtonsHBox.setSpacing(15);
+            vBox.getChildren().addAll(showBackImageButton, ImageButtonsHBox);
             vBox.setAlignment(Pos.CENTER);
             vBox.setSpacing(15);
 
-            showWordsButton.setOnAction(event ->
+            showBackImageButton.setOnAction(event ->
             {
-                hBox.setVisible(true);
+                knowImageButton.setOnAction(e ->
+                {
+                    knowImageButton.setDisable(true);
+                    unknownImageButton.setDisable(true);
+                    backCardDetailsHBox.requestFocus();
+                    knowCard();
+                });
+                unknownImageButton.setOnAction(e ->
+                {
+                    knowImageButton.setDisable(true);
+                    unknownImageButton.setDisable(true);
+                    backCardDetailsHBox.requestFocus();
+                    doNotKnowCard();
+                });
+
+                showBackImageButton.setDisable(true);
+                ImageButtonsHBox.setVisible(true);
                 showBackCardDetails();
             });
 
-            knowButton.setOnAction(e -> knowCard());
-            unknownButton.setOnAction(e -> doNotKnowCard());
-
-            getChildren().addAll(vBox, wordsLabel);
+            getChildren().addAll(topHBox, vBox, backCardDetailsHBox);
         }
     }
 
     private void createWordsLabel(ArrayList<String> words)
     {
+        VBox vBox = new VBox();
+        HBox hBox = new HBox();
+
+        TextField levelTextField = new TextField();
+        levelTextField.setText("Back Card");
+        levelTextField.setEditable(false);
+
+        hBox.getChildren().addAll(levelTextField);
+        HBox.setHgrow(levelTextField, Priority.ALWAYS);
+        levelTextField.setStyle("-fx-background-color: #15a300; " + "-fx-text-fill: white;" + "-fx-background-radius: 8 8 0 0;");
+
         wordsLabel = new TextArea();
         wordsLabel.setId("wordsLabel");
         wordsLabel.setEditable(false);
+
+        vBox.getChildren().addAll(hBox, wordsLabel);
+        HBox.setHgrow(vBox, Priority.SOMETIMES);
+
+        backCardDetailsHBox.getChildren().add(vBox);
+
+        backCardDetailsHBox.setVisible(false);
+
         for (String word : words)
         {
-            System.out.println(word);
             wordsLabel.setText(wordsLabel.getText() + word + "\n");
         }
-        wordsLabel.setVisible(false);
     }
 
     private void createDescriptionScrollPane()
     {
+        VBox vBox = new VBox();
+        HBox hBox = new HBox();
+
+        TextField levelTextField = new TextField();
+        levelTextField.setText("Description");
+        levelTextField.setEditable(false);
+        hBox.getChildren().addAll(levelTextField);
+        HBox.setHgrow(levelTextField, Priority.ALWAYS);
+        levelTextField.setStyle("-fx-background-color: #a30000; " + "-fx-text-fill: white;" + "-fx-background-radius: 8 8 0 0;");
+
         descriptionLabel = new TextArea();
-        descriptionLabel.setMinHeight(150);
-        descriptionLabel.setPrefRowCount(10);
-        descriptionLabel.setPrefColumnCount(100);
         descriptionLabel.setWrapText(true);
         descriptionLabel.setEditable(false);
         descriptionLabel.setText(card.getDescriptionBack());
-        this.getChildren().add(descriptionLabel);
+
+        vBox.getChildren().addAll(hBox, descriptionLabel);
+        HBox.setHgrow(vBox, Priority.ALWAYS);
+
+        backCardDetailsHBox.getChildren().add(vBox);
     }
 
 
@@ -116,6 +175,7 @@ public class BackCardView extends VBox
 
             Button evaluateButton = new Button("Evaluate >>");
             Button doNotKnowButton = new Button("Don't know");
+            VBox.setMargin(evaluateButton, new Insets(10, 0, 0, 0));
             evaluateButton.setId("blue-button");
             doNotKnowButton.setId("red-button");
             Label labelCheckingStatus = new Label();
@@ -153,6 +213,22 @@ public class BackCardView extends VBox
             {
                 doNotKnowCard();
                 evaluateButton.setDisable(true);
+                doNotKnowButton.setDisable(true);
+                Iterator<Node> textEditorsVBoxIterator = textEditorsVBox.getChildren().iterator();
+                while (textEditorsVBoxIterator.hasNext())
+                {
+                    Node textEditorsVBoxIteratorNextNode = textEditorsVBoxIterator.next();
+                    if (textEditorsVBoxIteratorNextNode instanceof HBox)
+                    {
+                        HBox hBox = (HBox) textEditorsVBoxIteratorNextNode;
+                        if (hBox.getChildren().get(0) instanceof TextField)
+                        {
+                            TextField textField = (TextField) hBox.getChildren().get(0);
+                            textField.setDisable(true);
+                        }
+                    }
+
+                }
                 showBackCardDetails();
             });
         }
@@ -160,20 +236,26 @@ public class BackCardView extends VBox
 
     private void showBackCardDetails()
     {
-        wordsLabel.setVisible(true);
-        if (card.getDescriptionBack().length() > 0)
-            createDescriptionScrollPane();
+        createWordsLabel(words);
+        backCardDetailsHBox.setVisible(true);
+        if (card.getDescriptionBack().length() > 0) createDescriptionScrollPane();
     }
 
     private void knowCard()
     {
         nextCardMustNotBeShown.set(false);
-        this.card.setKnown(true);
+        if (isTodayReview)
+        {
+            this.card.setKnown(true);
+        }
     }
 
     private void doNotKnowCard()
     {
         nextCardMustNotBeShown.set(false);
-        this.card.setKnown(false);
+        if (isTodayReview)
+        {
+            this.card.setKnown(false);
+        }
     }
 }

@@ -1,13 +1,56 @@
 
-.node-border {
+{
+    -fx-custom-color-menu-red: #a30000;
+}
+
+.root, .menu-bar {
+    -fx-background-color: black;
+}
+
+.menu .label {
+    -fx-text-fill: white;
+}
+
+.menu:focused, .menu:hover {
+    -fx-background-color: -fx-custom-color-menu-red;
+}
+
+/*---------------- Applying style for menu when menu-item is showing ----------------------------------------------*/
+
+.menu:showing, .menu:visited {
+    -fx-background-color: -fx-custom-color-menu-red;
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+
+.menu-item .label {
+    -fx-text-fill: black;
+}
+
+.menu-item:hover, .menu-item:focused {
+    -fx-background-color: -fx-custom-color-menu-red;
+}
+
+.top-controller-hbox{
     -fx-border-insets: 5, 23, 5, 23;
     -fx-background-insets: 5, 23, 5, 23;
     -fx-background-radius: 6;
     -fx-border-radius: 6;
-    -fx-border-color: gray;
     -fx-border-style: solid;
-    -fx-border-width: 1;
     -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 1, 0, 0, 0);
+    -fx-border-color: red;
+    -fx-border-width: 0.5;
+}
+
+#decks-table-view {
+    -fx-border-insets: 15, 23, 15, 23;
+    -fx-background-insets: 15, 23, 15, 23;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 1, 0, 0, 0);
+    -fx-border-color: red;
+    -fx-border-width: 3;
 }
 
 #dark-button {

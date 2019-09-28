@@ -7,18 +7,19 @@ import java.util.ArrayList;
 
 public class FlashCard implements Serializable
 {
-    public static final String UK_ACCENT = "_uk_pron.mp3";
-    public static final String US_ACCENT = "_us_pron.mp3";
-
     private static final long serialVersionUID = 6791167886655376469L;
-    private File directoryOfEnglishSound;
+
+    public static transient final String UK_ACCENT = "_uk_pron.mp3";
+    public static transient final String US_ACCENT = "_us_pron.mp3";
+
+    private File resourceDirectory;
     private String desiredEnglishAccent = UK_ACCENT;
 
     private ArrayList<Deck> decks;
 
-    public FlashCard(File directoryOfEnglishSound)
+    public FlashCard(File resourceDirectory)
     {
-        this.directoryOfEnglishSound = directoryOfEnglishSound;
+        this.resourceDirectory = resourceDirectory;
         this.decks = new ArrayList<>();
     }
 
@@ -43,16 +44,6 @@ public class FlashCard implements Serializable
         this.decks = decks;
     }
 
-    public File getDirectoryOfEnglishSound()
-    {
-        return directoryOfEnglishSound;
-    }
-
-    public void setDirectoryOfEnglishSound(File directoryOfEnglishSound)
-    {
-        this.directoryOfEnglishSound = directoryOfEnglishSound;
-    }
-
     public String getDesiredEnglishAccent()
     {
         return desiredEnglishAccent;
@@ -61,5 +52,27 @@ public class FlashCard implements Serializable
     public void setDesiredEnglishAccent(String desiredEnglishAccent)
     {
         this.desiredEnglishAccent = desiredEnglishAccent;
+    }
+
+    public File getResourceDirectory()
+    {
+        return resourceDirectory;
+    }
+
+    public void setResourceDirectory(File resourceDirectory)
+    {
+        this.resourceDirectory = resourceDirectory;
+    }
+
+    public File getResourceDirectoryEnglishVoices()
+    {
+        File file = new File(resourceDirectory.getPath() + "/voices/" + VoiceLanguage.ENGLISH);
+        return file;
+    }
+
+    public File getResourceDirectoryGermanVoices()
+    {
+        File file = new File(resourceDirectory.getPath() + "/voices/" + VoiceLanguage.GERMAN);
+        return file;
     }
 }

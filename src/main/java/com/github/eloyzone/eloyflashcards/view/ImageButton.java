@@ -12,13 +12,14 @@ public class ImageButton extends Button
     private final String STYLE_PRESSED = "-fx-background-color: transparent; -fx-padding: 3 1 1 3;";
     private final String HOVER_MOUSE_CURSOR = "-fx-cursor: hand;" + STYLE_NORMAL;
 
+    private ImageView imageView;
     public ImageButton(Image originalImage, double height, double width)
     {
-        ImageView image = new ImageView(originalImage);
-        image.setFitHeight(height);
-        image.setFitWidth(width);
-        image.setPreserveRatio(true);
-        setGraphic(image);
+        imageView = new ImageView(originalImage);
+        imageView.setFitHeight(height);
+        imageView.setFitWidth(width);
+        imageView.setPreserveRatio(true);
+        setGraphic(imageView);
         setStyle(STYLE_NORMAL);
 
         setOnMousePressed(event -> setStyle(STYLE_PRESSED));

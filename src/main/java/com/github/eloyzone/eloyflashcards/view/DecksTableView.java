@@ -34,27 +34,19 @@ public class DecksTableView extends TableView<Deck>
         deckNameTableColumn.setSortable(false);
         deckNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn newCardNumberTableColumn = new TableColumn("New");
-        newCardNumberTableColumn.setMinWidth(50);
-        newCardNumberTableColumn.setMaxWidth(50);
-        newCardNumberTableColumn.setPrefWidth(50);
-        newCardNumberTableColumn.setSortable(false);
-        newCardNumberTableColumn.setCellValueFactory(new PropertyValueFactory<>("newCardCount"));
+        TableColumn totalCardsTableColumn = new TableColumn("Total");
+        totalCardsTableColumn.setMinWidth(50);
+        totalCardsTableColumn.setMaxWidth(50);
+        totalCardsTableColumn.setPrefWidth(50);
+        totalCardsTableColumn.setSortable(false);
+        totalCardsTableColumn.setCellValueFactory(new PropertyValueFactory<>("cardsTotalSize"));
 
-        TableColumn learnedCardNumberTableColumn = new TableColumn("Learned");
-        learnedCardNumberTableColumn.setMinWidth(100);
-        learnedCardNumberTableColumn.setMaxWidth(100);
-        learnedCardNumberTableColumn.setPrefWidth(100);
-        learnedCardNumberTableColumn.setSortable(false);
-        learnedCardNumberTableColumn.setCellValueFactory(new PropertyValueFactory<>("learnedCardCount"));
-
-
-        TableColumn unlearnedCardNumberTableColumn = new TableColumn("Unlearned");
-        unlearnedCardNumberTableColumn.setMinWidth(100);
-        unlearnedCardNumberTableColumn.setMaxWidth(100);
-        unlearnedCardNumberTableColumn.setPrefWidth(100);
-        unlearnedCardNumberTableColumn.setSortable(false);
-        unlearnedCardNumberTableColumn.setCellValueFactory(new PropertyValueFactory<>("notLearnedCardCount"));
+        TableColumn toReviewTableColumn = new TableColumn("To Review");
+        toReviewTableColumn.setMinWidth(100);
+        toReviewTableColumn.setMaxWidth(100);
+        toReviewTableColumn.setPrefWidth(100);
+        toReviewTableColumn.setSortable(false);
+        toReviewTableColumn.setCellValueFactory(new PropertyValueFactory<>("todayCardsCount"));
 
         TableColumn deckOptionsTableColumn = new TableColumn("");
         deckOptionsTableColumn.setSortable(false);
@@ -136,9 +128,8 @@ public class DecksTableView extends TableView<Deck>
 
         deckOptionsTableColumn.setCellFactory(deckOptionsTableColumnCellFactory);
 
-
         setItems(this.deckObservableList);
-        getColumns().addAll(deckNameTableColumn, newCardNumberTableColumn, learnedCardNumberTableColumn, unlearnedCardNumberTableColumn, deckOptionsTableColumn);
+        getColumns().addAll(deckNameTableColumn, totalCardsTableColumn, toReviewTableColumn, deckOptionsTableColumn);
         setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 }

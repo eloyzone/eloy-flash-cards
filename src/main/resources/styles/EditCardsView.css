@@ -44,3 +44,11 @@
     -fx-background-color: linear-gradient(#c3d838, #8dce00),
     radial-gradient(center 50% -40%, radius 200%, #8ab92f 45%, #68b100 50%);
 }
+
+.check-box{
+    -fx-text-fill: white;
+}
+
+.white-label{
+    -fx-text-fill: white;
+}

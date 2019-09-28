@@ -3,11 +3,20 @@
 }
 
 #wordsLabel {
-    -fx-font-size: 1.5em;
-    -fx-min-height: 150;
+    -fx-font-size: 1.3em;
+    /*-fx-max-height: 60;*/
 }
 
 .text-area .scroll-pane .content{
     -fx-background-color: transparent;
 }
 
+.node-border3 {
+    -fx-border-insets: 5, 23, 5, 23;
+    /*-fx-background-insets: 5, 23, 5, 23;*/
+    /*-fx-background-radius: 6;*/
+    -fx-border-radius: 6;
+    -fx-border-color: black;
+    -fx-border-style: solid;
+    -fx-border-width: 5;
+}

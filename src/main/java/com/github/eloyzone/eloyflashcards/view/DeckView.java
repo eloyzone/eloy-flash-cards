@@ -3,16 +3,22 @@ package com.github.eloyzone.eloyflashcards.view;
 import com.github.eloyzone.eloyflashcards.model.Card;
 import com.github.eloyzone.eloyflashcards.model.Deck;
 import com.github.eloyzone.eloyflashcards.util.Initializer;
+import com.github.eloyzone.eloyflashcards.util.Transitioner;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -29,12 +35,30 @@ public class DeckView extends VBox
     private StackPane parentStackPane;
     public BooleanProperty nextCardMustNotBeShown = new SimpleBooleanProperty(true);
 
+    private boolean isTodayReview = false;
+
     private Deck deck;
+
+    private int countOfTodaysCardsToReview = 0;
+    private double countOfVisitedCard = 0;
+    private int countOfCardsInARow = 0;
+
+    private ScrollPane bottomScrollPane;
+    private ScrollPane topScrollPane;
+
+    private ProgressBar progressBar;
+    private HBox hBoxProgressBar;
+    private Label progressStatusLabel;
+    private VBox topVBox;
+
+    private final String RED_PROGRESS_BAR = "red-bar";
+    private final String ORANGE_PROGRESS_BAR = "orange-bar";
+    private final String GREEN_PROGRESS_BAR = "green-bar";
+    private final String[] PROGRESS_BAR_STYLE_CLASSES = {RED_PROGRESS_BAR, ORANGE_PROGRESS_BAR, GREEN_PROGRESS_BAR};
 
     private DeckView()
     {
     }
-
 
     public DeckView(StackPane parentStackPane, Deck deck)
     {
@@ -42,36 +66,42 @@ public class DeckView extends VBox
         this.parentStackPane = parentStackPane;
         this.parentStackPane.getStylesheets().add(getClass().getResource("/styles/DeckView.css").toExternalForm());
 
-        parentStackPane.getChildren().addAll(welcomingView());
-        parentStackPane.getChildren().get(0).setVisible(false);
-
-        if(evaluateSoundPlayingIssue())
+        if (evaluateSoundPlayingIssue())
         {
             startLearningButton.setDisable(true);
-        }
-        else
+        } else
         {
-            ArrayList<Card> cards = new ArrayList<>(deck.getCards());
+            ArrayList<Card> cards = new ArrayList<>(deck.getTodayCards());
+            countOfTodaysCardsToReview = cards.size();
             Collections.shuffle(cards);
             cardsIterator = cards.iterator();
         }
+
+        parentStackPane.getChildren().addAll(welcomingView());
+        parentStackPane.getChildren().get(0).setVisible(false);
+
+        FadeTransition fadeTransitionTop = Transitioner.getFade(600, parentStackPane);
+        fadeTransitionTop.play();
+
+
     }
 
     private boolean evaluateSoundPlayingIssue()
     {
+        // todo: handle both german and english
         boolean soundPlayingIssue = false;
-        if (Initializer.getFlashCard().getDirectoryOfEnglishSound() == null)
-        {
-            ArrayList<Card> cardsArrayList = this.deck.getCards();
-            for (Card card : cardsArrayList)
-            {
-                if (card.isHasVoiceOnFace())
-                {
-                    soundPlayingIssue = true;
-                    break;
-                }
-            }
-        }
+//        if (Initializer.getFlashCard().getDirectoryOfEnglishSound() == null)
+//        {
+//            ArrayList<Card> cardsArrayList = this.deck.getCards();
+//            for (Card card : cardsArrayList)
+//            {
+//                if (card.isHasVoiceOnFace())
+//                {
+//                    soundPlayingIssue = true;
+//                    break;
+//                }
+//            }
+//        }
 
         return soundPlayingIssue;
     }
@@ -90,19 +120,32 @@ public class DeckView extends VBox
         hBoxTop.setAlignment(Pos.CENTER);
         hBoxBottom.setAlignment(Pos.CENTER);
         vBoxLeft.setAlignment(Pos.CENTER_LEFT);
-        vBoxRight.setAlignment(Pos.CENTER_RIGHT);
+        vBoxRight.setAlignment(Pos.CENTER);
         vBox.setPadding(new Insets(15, 0, 0, 0));
         hBoxTop.setPadding(new Insets(0, 0, 50, 0));
         vBoxLeft.setPadding(new Insets(0, 50, 0, 0));
         vBoxRight.setPadding(new Insets(0, 0, 0, 50));
 
-
-        Label deckNameLabel = new Label("Pronunciation");
+        Label deckNameLabel = new Label(deck.getName());
         hBoxTop.getChildren().addAll(deckNameLabel);
+        hBoxTop.getStyleClass().add("general-welcome-info");
 
-        startLearningButton = new ImageButton(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_student.png")), 100, 100, ContentDisplay.TOP, "Study Now!", null);
-        startLearningButton.setOnAction(e ->
+        ImageView imageView = new ImageView(new Image(getClass().getClassLoader().getResourceAsStream("images/icon_student.png")));
+        imageView.setFitHeight(100);
+        imageView.setFitWidth(100);
+        imageView.setPreserveRatio(true);
+
+        Button reviewAllCardsButton = new Button("Review All");
+        Button reviewTodayCardButton = new Button("Review Today's");
+        reviewAllCardsButton.setId("red-button");
+        reviewTodayCardButton.setId("red-button");
+
+        if (this.countOfTodaysCardsToReview == 0) reviewTodayCardButton.setDisable(true);
+
+        reviewTodayCardButton.setOnAction(e ->
         {
+            isTodayReview = true;
+            countOfCardsInARow = this.countOfTodaysCardsToReview;
             if (cardsIterator.hasNext())
             {
                 BorderPane borderPane = (BorderPane) initializeCardsView();
@@ -113,9 +156,27 @@ public class DeckView extends VBox
                 borderPane.prefHeightProperty().bind(parentStackPane.heightProperty());
             }
         });
-        vBoxRight.getChildren().addAll(startLearningButton);
 
-        vBox.getStyleClass().add("node-border");
+        reviewAllCardsButton.setOnAction(e ->
+        {
+            isTodayReview = false;
+            ArrayList<Card> cards = new ArrayList<>(deck.getAllCards());
+            countOfCardsInARow = cards.size();
+            Collections.shuffle(cards);
+            cardsIterator = cards.iterator();
+            if (cardsIterator.hasNext())
+            {
+                BorderPane borderPane = (BorderPane) initializeCardsView();
+                parentStackPane.getChildren().add(borderPane);
+                parentStackPane.getChildren().get(1).setVisible(false);
+
+                borderPane.prefWidthProperty().bind(parentStackPane.widthProperty());
+                borderPane.prefHeightProperty().bind(parentStackPane.heightProperty());
+            }
+        });
+
+        vBoxRight.getChildren().addAll(imageView, reviewTodayCardButton, reviewAllCardsButton);
+        vBox.getStyleClass().add("welcoming-vbox-border");
         return vBox;
     }
 
@@ -123,38 +184,80 @@ public class DeckView extends VBox
     private Node deckGeneralInfo()
     {
         GridPane gridpane = new GridPane();
+        gridpane.getStyleClass().add("general-welcome-info");
+
         gridpane.setPadding(new Insets(5));
         gridpane.setHgap(15);
         gridpane.setVgap(15);
-        ColumnConstraints column1 = new ColumnConstraints(100);
+        ColumnConstraints column1 = new ColumnConstraints(150);
         ColumnConstraints column2 = new ColumnConstraints(50, 150, 300);
         gridpane.getColumnConstraints().addAll(column1, column2);
 
-        Label newLabel = new Label("New");
-        Label newValueLabel = new Label("");
-        Label learnedLabel = new Label("Learned");
-        Label learnedValueLabel = new Label("");
-        Label notLearnedLabel = new Label("Not Learned");
-        Label notLearnedValueLabel = new Label("");
+        Label cardsLevelOneLabel = new Label("Level One");
+        Label cardsLevelOneCountLabel = new Label("");
+        Label cardsLevelTwoLabel = new Label("Level Two");
+        Label cardsLevelTwoCountLabel = new Label("");
+        Label cardsLevelThreeLabel = new Label("Level Three");
+        Label cardsLevelThreeCountLabel = new Label("");
+        Label cardsLevelFourLabel = new Label("Level Four");
+        Label cardsLevelFourCountLabel = new Label("");
+        Label cardsLevelFiveLabel = new Label("Level Five");
+        Label cardsLevelFiveCountLabel = new Label("");
+        Label cardsLevelSixLabel = new Label("Level Six");
+        Label cardsLevelSixCountLabel = new Label("");
+        Label cardsLevelSevenLabel = new Label("Level Seven");
+        Label cardsLevelSevenCountLabel = new Label("");
+        Label cardsToReviewLabel = new Label("Cards To Review");
+        Label cardsToReviewCountLabel = new Label("");
         Label totalLabel = new Label("Total");
-        Label totalValueLabel = new Label("");
+        Label totalCountLabel = new Label("");
 
-        gridpane.add(newLabel, 0, 0);
-        gridpane.add(newValueLabel, 1, 0);
+        gridpane.add(cardsLevelOneLabel, 0, 0);
+        gridpane.add(cardsLevelOneCountLabel, 1, 0);
 
-        gridpane.add(learnedLabel, 0, 1);
-        gridpane.add(learnedValueLabel, 1, 1);
+        gridpane.add(cardsLevelTwoLabel, 0, 1);
+        gridpane.add(cardsLevelTwoCountLabel, 1, 1);
 
-        gridpane.add(notLearnedLabel, 0, 2);
-        gridpane.add(notLearnedValueLabel, 1, 2);
+        gridpane.add(cardsLevelThreeLabel, 0, 2);
+        gridpane.add(cardsLevelThreeCountLabel, 1, 2);
 
-        gridpane.add(totalLabel, 0, 3);
-        gridpane.add(totalValueLabel, 1, 3);
+        gridpane.add(cardsLevelFourLabel, 0, 3);
+        gridpane.add(cardsLevelFourCountLabel, 1, 3);
 
-        newValueLabel.setText(String.valueOf(deck.getNewCardCount()));
-        learnedValueLabel.setText(String.valueOf(deck.getLearnedCardCount()));
-        notLearnedValueLabel.setText(String.valueOf(deck.getNotLearnedCardCount()));
-        totalValueLabel.setText(String.valueOf(deck.getTotalCardNumber()));
+        gridpane.add(cardsLevelFiveLabel, 0, 4);
+        gridpane.add(cardsLevelFiveCountLabel, 1, 4);
+
+        gridpane.add(cardsLevelSixLabel, 0, 5);
+        gridpane.add(cardsLevelSixCountLabel, 1, 5);
+
+        gridpane.add(cardsLevelSevenLabel, 0, 6);
+        gridpane.add(cardsLevelSevenCountLabel, 1, 6);
+
+        gridpane.add(cardsToReviewLabel, 0, 7);
+        gridpane.add(cardsToReviewCountLabel, 1, 7);
+
+        gridpane.add(totalLabel, 0, 8);
+        gridpane.add(totalCountLabel, 1, 8);
+
+        cardsLevelOneCountLabel.setText(String.valueOf(deck.getLevelOneCardsSize()));
+        cardsLevelTwoCountLabel.setText(String.valueOf(deck.getLevelTwoCardsSize()));
+        cardsLevelThreeCountLabel.setText(String.valueOf(deck.getLevelThreeCardsSize()));
+        cardsLevelFourCountLabel.setText(String.valueOf(deck.getLevelFourCardsSize()));
+        cardsLevelFiveCountLabel.setText(String.valueOf(deck.getLevelFiveCardsSize()));
+        cardsLevelSixCountLabel.setText(String.valueOf(deck.getLevelSixCardsSize()));
+        cardsLevelSevenCountLabel.setText(String.valueOf(deck.getLevelSevenCardsSize()));
+        cardsToReviewCountLabel.setText(String.valueOf(this.countOfTodaysCardsToReview));
+        totalCountLabel.setText(String.valueOf(deck.getCardsTotalSize()));
+
+        if (this.countOfTodaysCardsToReview == 0)
+        {
+            cardsToReviewCountLabel.getStyleClass().addAll("green-text");
+            cardsToReviewLabel.getStyleClass().addAll("green-text");
+        } else
+        {
+            cardsToReviewCountLabel.getStyleClass().addAll("red-text");
+            cardsToReviewLabel.getStyleClass().addAll("red-text");
+        }
 
         return gridpane;
     }
@@ -164,19 +267,36 @@ public class DeckView extends VBox
     {
         BorderPane borderPane = new BorderPane();
 
-        ScrollPane topScrollPane = new ScrollPane();
+        topScrollPane = new ScrollPane();
         topScrollPane.setFitToWidth(true);
         topScrollPane.setFitToHeight(true);
         topScrollPane.prefWidthProperty().bind(borderPane.widthProperty().divide(2));
         topScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2).subtract(100));
-        topScrollPane.getStyleClass().add("node-border");
+        topScrollPane.getStyleClass().add("node-border2");
 
-        ScrollPane bottomScrollPane = new ScrollPane();
+        bottomScrollPane = new ScrollPane();
         bottomScrollPane.setFitToWidth(true);
         bottomScrollPane.setFitToHeight(true);
         bottomScrollPane.prefWidthProperty().bind(borderPane.widthProperty().divide(2));
         bottomScrollPane.prefHeightProperty().bind(borderPane.heightProperty().divide(2).add(100));
-        bottomScrollPane.getStyleClass().add("node-border");
+        bottomScrollPane.getStyleClass().add("edge-to-edge");
+        bottomScrollPane.getStyleClass().add("node-border2");
+
+
+        progressBar = new ProgressBar();
+        progressBar.setMaxWidth(Double.MAX_VALUE);
+
+        hBoxProgressBar = new HBox();
+        hBoxProgressBar.setHgrow(progressBar, Priority.ALWAYS);
+        hBoxProgressBar.setPadding(new Insets(0, 15, 10, 15));
+        hBoxProgressBar.setSpacing(10);
+        progressStatusLabel = new Label();
+        progressStatusLabel.setTextFill(Color.WHITE);
+        hBoxProgressBar.getChildren().addAll(progressStatusLabel, progressBar);
+        hBoxProgressBar.setStyle("-fx-background-color: black;");
+
+        topVBox = new VBox();
+        topVBox.getChildren().addAll(hBoxProgressBar);
 
         inflateCards((Card) cardsIterator.next());
 
@@ -193,20 +313,6 @@ public class DeckView extends VBox
             {
                 nextCardMustNotBeShown.set(true);
                 inflateCards((Card) cardsIterator.next());
-
-                final FadeTransition transition = new FadeTransition(Duration.millis(600), faceCardView);
-                transition.setFromValue(0);
-                transition.setToValue(1);
-                transition.setInterpolator(Interpolator.EASE_IN);
-                topScrollPane.setContent(faceCardView);
-                transition.play();
-
-                final FadeTransition transition2 = new FadeTransition(Duration.millis(600), backCardVBox);
-                transition2.setFromValue(0);
-                transition2.setToValue(1);
-                transition2.setInterpolator(Interpolator.EASE_IN);
-                bottomScrollPane.setContent(backCardVBox);
-                transition2.play();
             } else
             {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -225,10 +331,7 @@ public class DeckView extends VBox
 
         });
 
-
-        topScrollPane.setContent(faceCardView);
-        bottomScrollPane.setContent(backCardVBox);
-
+        topScrollPane.setContent(topVBox);
         borderPane.setTop(topScrollPane);
         borderPane.setCenter(bottomScrollPane);
         borderPane.setBottom(nextCardImageButtonHBox);
@@ -237,7 +340,46 @@ public class DeckView extends VBox
 
     private void inflateCards(Card nextCard)
     {
+        backCardVBox = new BackCardView(nextCard, nextCardMustNotBeShown, this.isTodayReview);
         faceCardView = new FaceCardView(nextCard);
-        backCardVBox = new BackCardView(nextCard, nextCardMustNotBeShown);
+        VBox.setVgrow(faceCardView, Priority.ALWAYS);
+
+        FadeTransition fadeTransitionTop = Transitioner.getFade(600, faceCardView);
+        FadeTransition fadeTransitionBottom = Transitioner.getFade(600, bottomScrollPane);
+
+        bottomScrollPane.setContent(backCardVBox);
+        bottomScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        countOfVisitedCard++;
+        double progressValue = countOfVisitedCard / countOfCardsInARow;
+        progressBar.setProgress(progressValue);
+        progressStatusLabel.setText((int) countOfVisitedCard + "/" + countOfCardsInARow);
+
+        if (progressValue < 0.2)
+        {
+            progressBar.getStyleClass().removeAll(PROGRESS_BAR_STYLE_CLASSES);
+            progressBar.getStyleClass().add(RED_PROGRESS_BAR);
+        } else if (progressValue <= 0.99)
+        {
+            progressBar.getStyleClass().removeAll(PROGRESS_BAR_STYLE_CLASSES);
+            progressBar.getStyleClass().add(ORANGE_PROGRESS_BAR);
+        } else
+        {
+            progressBar.getStyleClass().removeAll(PROGRESS_BAR_STYLE_CLASSES);
+            progressBar.getStyleClass().add(GREEN_PROGRESS_BAR);
+        }
+
+
+        if (topVBox.getChildren().size() == 2)
+        {
+            topVBox.getChildren().remove(1);
+            topVBox.getChildren().addAll(faceCardView);
+        } else
+        {
+            topVBox.getChildren().addAll(faceCardView);
+        }
+
+        fadeTransitionTop.play();
+        fadeTransitionBottom.play();
     }
 }

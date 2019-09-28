@@ -2,6 +2,9 @@ package com.github.eloyzone.eloyflashcards.view;
 
 import com.github.eloyzone.eloyflashcards.model.Deck;
 import com.github.eloyzone.eloyflashcards.util.Initializer;
+import com.github.eloyzone.eloyflashcards.util.Transitioner;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,36 +22,38 @@ import javafx.stage.Stage;
 
 public class MainView extends Application
 {
+    private Scene scene;
+    private BorderPane mainBorderPane;
+    private HBox topControllerHBox;
+    private Button showDecksButton;
+    private Button addDeckButton;
+    private Button addCardButton;
+    private StackPane mainStackPane;
+    private VBox centerVBox;
+
     private DecksTableView decksTableView;
     private ObservableList<Deck> deckObservableList;
-    private StackPane mainStackPane;
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
         deckObservableList = FXCollections.observableArrayList(Initializer.getFlashCard().getDecks());
 
-        BorderPane mainBorderPane = new BorderPane();
-
-        HBox topControllerHBox = createTopController();
+        mainBorderPane = new BorderPane();
+        topControllerHBox = createTopController();
         mainStackPane = new StackPane();
-        VBox centerVBox = new VBox();
+        centerVBox = new VBox();
         centerVBox.getChildren().addAll(topControllerHBox, mainStackPane);
 
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setFitToHeight(true);
-        scrollPane.setFitToWidth(true);
-        scrollPane.getStyleClass().add("node-border");
-
-        mainStackPane.getChildren().addAll(scrollPane);
-
         decksTableView = new DecksTableView(deckObservableList, mainStackPane);
-        scrollPane.setContent(decksTableView);
+        decksTableView.setId("decks-table-view");
+
+        mainStackPane.getChildren().addAll(decksTableView);
 
         mainBorderPane.setTop(new MenuBar(this));
         mainBorderPane.setCenter(centerVBox);
 
-        Scene scene = new Scene(mainBorderPane, 700, 700);
+        scene = new Scene(mainBorderPane, 700, 700);
         scene.getStylesheets().add(getClass().getResource("/styles/MainView.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
@@ -59,7 +64,7 @@ public class MainView extends Application
         mainStackPane.prefWidthProperty().bind(scene.widthProperty());
         mainStackPane.prefHeightProperty().bind(scene.heightProperty());
 
-        if (Initializer.getFlashCard().getDirectoryOfEnglishSound() == null)
+        if (Initializer.getFlashCard().getResourceDirectory() == null)
         {
             new SelectResourceView();
         }
@@ -68,15 +73,15 @@ public class MainView extends Application
 
     private HBox createTopController()
     {
-        HBox hBox = new HBox();
-        hBox.setSpacing(5);
-        hBox.setAlignment(Pos.CENTER);
-        hBox.getStyleClass().add("node-border");
-        hBox.setPadding(new Insets(5, 0, 5, 0));
+        topControllerHBox = new HBox();
+        topControllerHBox.setSpacing(5);
+        topControllerHBox.setAlignment(Pos.CENTER);
+        topControllerHBox.getStyleClass().add("top-controller-hbox");
+        topControllerHBox.setPadding(new Insets(5, 0, 5, 0));
 
-        Button showDecksButton = new Button("Decks");
-        Button addDeckButton = new Button("Add Deck");
-        Button addCardButton = new Button("Add Card");
+        showDecksButton = new Button("Decks");
+        addDeckButton = new Button("Add Deck");
+        addCardButton = new Button("Add Card");
         showDecksButton.setId("dark-button");
         addDeckButton.setId("dark-button");
         addCardButton.setId("dark-button");
@@ -87,6 +92,10 @@ public class MainView extends Application
             for (; sizeOfMainStackPane > 1; sizeOfMainStackPane--)
                 mainStackPane.getChildren().remove(sizeOfMainStackPane - 1);
             mainStackPane.getChildren().get(0).setVisible(true);
+
+            FadeTransition fadeTransitionTop = Transitioner.getFade(600, mainStackPane);
+            fadeTransitionTop.play();
+
         });
 
         addDeckButton.setOnAction(e ->
@@ -101,8 +110,8 @@ public class MainView extends Application
             decksTableView.refresh();
         });
 
-        hBox.getChildren().addAll(showDecksButton, addDeckButton, addCardButton);
+        topControllerHBox.getChildren().addAll(showDecksButton, addDeckButton, addCardButton);
 
-        return hBox;
+        return topControllerHBox;
     }
 }
